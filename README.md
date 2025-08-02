@@ -15,7 +15,7 @@
 
 1) Поднимаем Xray-Checker https://github.com/kutovoys/xray-checker
 
-2) Делаем обратное прокси на страницу /metrics (Скрываем страницу логинов паролем htpasswd для безопасности)
+2) Делаем обратное прокси на страницу /metrics (Скрываем страницу логином и паролем htpasswd для безопасности)
 
       
        location /metrics {
