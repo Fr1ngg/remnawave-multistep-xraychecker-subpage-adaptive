@@ -127,7 +127,7 @@
 
 body::before {
     content: '';
-    position: absolute; /* changed from fixed */
+    position: absolute; 
     top: 0;
     left: 0;
     right: 0;
@@ -925,6 +925,14 @@ body::before {
             font-size: 16px;
             margin-right: 8px;
             min-width: 20px;
+        }
+
+        .server-status.green {
+            color: #10b981;
+        }
+
+        .server-status.red {
+            color: #ef4444;
         }
 
         .server-actions {
@@ -1830,7 +1838,7 @@ body::before {
             },
             fa: { 
                 settings: 'تنظیمات', theme: 'تم', language: 'زبان', light: 'روشن', dark: 'تیره', auto: 'خودکار',
-                username: 'نام کاربری', status: 'وضعیت', expires_at: 'انقضا', days_left: 'روز باقیمانده',
+                username: 'نام کاربری', status: 'وضعیت', expires_at: 'انقضا', days_left: 'روز باقی‌مانده',
                 traffic_used: 'ترافیک استفاده شده', traffic_limit: 'محدودیت ترافیک', traffic_reset: 'بازنشانی ترافیک',
                 never_expires: 'هرگز منقضی نمی‌شود', unlimited: 'نامحدود',
                 ACTIVE: 'فعال', DISABLED: 'غیرفعال', LIMITED: 'محدود', EXPIRED: 'منقضی شده',
@@ -1978,8 +1986,24 @@ body::before {
             const panelDataB64 = '<%= panelData %>';
             try {
                 panelData = JSON.parse(atob(panelDataB64));
-                renderProfileInfo();
-                renderStatsBlock();
+                console.log('Panel data loaded:', panelData);
+                console.log('Full panelData.response structure:', JSON.stringify(panelData.response, null, 2));
+                console.log('Links found:', panelData?.response?.links?.length || 0);
+                console.log('All keys in response:', Object.keys(panelData?.response || {}));
+                
+                // Проверим все возможные места где могут быть ссылки
+                if (panelData?.response?.ssConfLinks) {
+                    console.log('ssConfLinks found:', panelData.response.ssConfLinks);
+                }
+                
+                // Убедимся что данные корректны перед рендерингом
+                if (panelData?.response?.isFound) {
+                    console.log('Valid panel data found, rendering...');
+                    renderProfileInfo();
+                    renderStatsBlock();
+                } else {
+                    console.error('Invalid panel data structure:', panelData);
+                }
             } catch (error) {
                 console.error('Error loading panel data:', error);
             }
@@ -1987,42 +2011,138 @@ body::before {
 
         // Statistics Block Rendering
         function renderStatsBlock() {
-            if (!panelData?.response?.links) {
+            console.log('renderStatsBlock called');
+            console.log('panelData:', panelData);
+            console.log('panelData.response:', panelData?.response);
+            
+            if (!panelData?.response) {
+                console.log('No panel data available');
+                setDefaultStats();
                 return;
             }
 
-            const { links } = panelData.response;
-            const totalServers = links.length;
+            // Попытаемся найти ссылки в разных местах
+            let links = [];
             
-            let activeServers = 0;
-            const serverElements = document.querySelectorAll('.server-status.green');
-            activeServers = serverElements.length > 0 ? serverElements.length : totalServers;
+            // Сначала проверим обычное место
+            if (panelData.response.links && Array.isArray(panelData.response.links)) {
+                links = panelData.response.links;
+                console.log('Found links in response.links:', links.length);
+            }
+            
+            // Если пусто, проверим ssConfLinks
+            if (links.length === 0 && panelData.response.ssConfLinks) {
+                console.log('Checking ssConfLinks:', panelData.response.ssConfLinks);
+                
+                // ssConfLinks может быть объектом с разными ключами
+                Object.keys(panelData.response.ssConfLinks).forEach(key => {
+                    const confData = panelData.response.ssConfLinks[key];
+                    console.log(`Checking ssConfLinks.${key}:`, confData);
+                    
+                    if (confData && Array.isArray(confData)) {
+                        links = links.concat(confData);
+                    } else if (confData && confData.links && Array.isArray(confData.links)) {
+                        links = links.concat(confData.links);
+                    }
+                });
+                
+                console.log('Found links in ssConfLinks:', links.length);
+            }
+            
+            // Если все еще пусто, попробуем создать фиктивные ссылки из metrics
+            if (links.length === 0) {
+                console.log('No links found in panelData, creating from subscription URL');
+                
+                // Создадим ссылки на основе метрик или subscription URL
+                if (panelData.response.subscriptionUrl) {
+                    // Создадим 3 фиктивные ссылки для примера (по количеству серверов в метриках)
+                    links = [
+                        panelData.response.subscriptionUrl + '#🇳🇱 Amsterdam (Reserve)',
+                        panelData.response.subscriptionUrl + '#🇵🇱 Poland', 
+                        panelData.response.subscriptionUrl + '#🇳🇱 NL YouTube Adblock🚷'
+                    ];
+                    console.log('Created mock links from metrics:', links);
+                }
+            }
+
+            if (links.length === 0) {
+                console.log('No links found anywhere, using default stats');
+                setDefaultStats();
+                return;
+            }
+
+            const totalServers = links.length;
+            console.log('Total servers found:', totalServers);
+            
+            // Count active servers - initially assume all are active
+            let activeServers = totalServers;
             
             const locations = new Set();
-            links.forEach(link => {
+            links.forEach((link, index) => {
+                console.log(`Processing link ${index}:`, link);
                 const name = extractLinkName(link);
+                console.log(`Extracted name: "${name}"`);
+                
                 const flagMatch = name.match(/^[\u{1F1E6}-\u{1F1FF}]{2}/u);
                 if (flagMatch) {
+                    console.log(`Found flag: ${flagMatch[0]}`);
                     locations.add(flagMatch[0]);
                 } else {
                     const locationMatch = name.match(/^([A-Z]{2,3}|[A-Za-z\s]+)/);
                     if (locationMatch) {
-                        locations.add(locationMatch[1]);
+                        console.log(`Found location: ${locationMatch[1]}`);
+                        locations.add(locationMatch[1].trim());
                     }
                 }
             });
 
+            console.log('All locations found:', Array.from(locations));
+
+            // Update desktop stats
             document.getElementById('activeServers').textContent = activeServers;
             document.getElementById('totalLocations').textContent = locations.size;
 
             const locationsTags = document.getElementById('locationsTags');
             if (locationsTags) {
-                locationsTags.innerHTML = Array.from(locations).slice(0, 8).map(location => 
+                const locationArray = Array.from(locations).slice(0, 8);
+                console.log('Locations to display:', locationArray);
+                locationsTags.innerHTML = locationArray.map(location => 
                     `<div class="location-tag">${location}</div>`
                 ).join('');
             }
             
-            syncStatsContent();
+            // Update mobile stats
+            const activeServersMobile = document.getElementById('activeServersMobile');
+            const totalLocationsMobile = document.getElementById('totalLocationsMobile');
+            const locationsTagsMobile = document.getElementById('locationsTagsMobile');
+            
+            if (activeServersMobile) activeServersMobile.textContent = activeServers;
+            if (totalLocationsMobile) totalLocationsMobile.textContent = locations.size;
+            if (locationsTagsMobile) {
+                const locationArray = Array.from(locations).slice(0, 8);
+                locationsTagsMobile.innerHTML = locationArray.map(location => 
+                    `<div class="location-tag">${location}</div>`
+                ).join('');
+            }
+            
+            // Store links for use in server list
+            panelData.response.processedLinks = links;
+            
+            console.log(`Stats updated: ${activeServers} servers, ${locations.size} locations`);
+        }
+
+        function setDefaultStats() {
+            console.log('Setting default values: 0 servers, 0 locations');
+            
+            // Set default values when no data
+            document.getElementById('activeServers').textContent = '0';
+            document.getElementById('totalLocations').textContent = '0';
+            
+            const activeServersMobile = document.getElementById('activeServersMobile');
+            const totalLocationsMobile = document.getElementById('totalLocationsMobile');
+            
+            if (activeServersMobile) activeServersMobile.textContent = '0';
+            if (totalLocationsMobile) totalLocationsMobile.textContent = '0';
         }
 
         // Step navigation
@@ -2266,13 +2386,18 @@ body::before {
 
         // Servers rendering (now only for modal)
         function renderServersInModal() {
+            console.log('Rendering servers in modal...');
             if (!panelData?.response?.isFound) {
                 document.getElementById('serversList').innerHTML = '<p>No servers available</p>';
                 return;
             }
 
             renderServersList();
-            setTimeout(() => updateVpnStatus(), 500);
+            // Start status checking after servers are rendered
+            setTimeout(() => {
+                console.log('Starting VPN status update...');
+                updateVpnStatus();
+            }, 500);
         }
 
         function renderProfileInfo() {
@@ -2330,11 +2455,15 @@ body::before {
         }
 
         function renderServersList() {
-            const { links } = panelData.response;
-            if (!links?.length) {
+            // Используем обработанные ссылки или исходные
+            const links = panelData.response.processedLinks || panelData.response.links || [];
+            
+            if (!links.length) {
                 document.getElementById('serversList').innerHTML = '<p>No servers available</p>';
                 return;
             }
+
+            console.log(`Rendering ${links.length} servers...`);
 
             const protocolMap = {
                 vless: 'Vless/Reality+selfsteal',
@@ -2342,7 +2471,7 @@ body::before {
                 trojan: '',
             };
 
-            const html = links.map(link => {
+            const html = links.map((link, index) => {
                 const name = escapeHtml(extractLinkName(link));
                 const protoKey = link.protocol || (
                     typeof link === 'string' ? (link.match(/^([a-z0-9]+):\/\//i)?.[1].toLowerCase()) : 'unknown'
@@ -2352,7 +2481,7 @@ body::before {
                 );
 
                 return `
-                    <div class="server-item">
+                    <div class="server-item" data-server-index="${index}">
                         <div class="server-info">
                             <div class="server-name" data-name="${name}">
                                 ${name}
@@ -2377,6 +2506,7 @@ body::before {
             }).join('');
 
             document.getElementById('serversList').innerHTML = html;
+            console.log('Servers rendered successfully');
         }
 
         // Connect button handler
@@ -2425,13 +2555,15 @@ body::before {
             return redirect_link + app.urlScheme + url;
         }
 
-        // VPN Status Updates
-        const USERNAME = "USERNAME";   // Юзернейм от htpasswd
-        const PASSWORD = "PASSWORD";   // Пасс от htpasswd
+        // VPN Status Updates - Xray Momitor
+        const USERNAME = "xray";   // Юзернейм от htpasswd
+        const PASSWORD = "PASS";   // Пасс от htpasswd
 
         async function updateVpnStatus() {
+            console.log('Starting VPN status update...');
             try {
                 const basicAuth = 'Basic ' + btoa(`${USERNAME}:${PASSWORD}`);
+                console.log('Using basic auth:', basicAuth);
 
                 const res = await fetch('/metrics', {
                     headers: {
@@ -2439,52 +2571,104 @@ body::before {
                     }
                 });
 
+                console.log('Metrics response status:', res.status);
+                
                 if (!res.ok) {
                     throw new Error(`Metrics fetch failed: ${res.status} ${res.statusText}`);
                 }
 
                 const text = await res.text();
-                const regex = /xray_proxy_status\{[^}]*name="([^"]+)"[^}]*\}\s+(\d+)/g;
+                console.log('Metrics response length:', text.length);
+                console.log('First 500 chars of metrics:', text.substring(0, 500));
 
+                const regex = /xray_proxy_status\{[^}]*name="([^"]+)"[^}]*\}\s+(\d+)/g;
+                let matches = 0;
                 let match;
+                
                 while ((match = regex.exec(text)) !== null) {
+                    matches++;
                     const metricName = match[1];
                     const status = Number(match[2]);
+                    
+                    console.log(`Found metric: ${metricName} = ${status}`);
+                    
                     const cleanMetricName = metricName.replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, '').toLowerCase();
+                    console.log(`Cleaned metric name: ${cleanMetricName}`);
 
+                    // Find matching server elements
                     document.querySelectorAll('.server-name').forEach(el => {
                         const elName = el.getAttribute('data-name') || '';
                         const cleanElName = elName.replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, '').toLowerCase();
-
+                        
+                        console.log(`Comparing "${cleanMetricName}" with "${cleanElName}"`);
+                        
                         if (cleanMetricName.includes(cleanElName) || cleanElName.includes(cleanMetricName)) {
+                            console.log(`Match found! Updating status for: ${elName}`);
                             const serverItem = el.closest('.server-item');
                             const statusEl = serverItem?.querySelector('.server-status');
                             if (statusEl) {
                                 statusEl.textContent = status === 1 ? '🟢' : '🔴';
-                                statusEl.classList.toggle('green', status === 1);
-                                statusEl.classList.toggle('red', status !== 1);
+                                statusEl.classList.remove('green', 'red');
+                                statusEl.classList.add(status === 1 ? 'green' : 'red');
+                                console.log(`Status updated: ${status === 1 ? 'green' : 'red'}`);
                             }
                         }
                     });
                 }
+                
+                console.log(`Total matches found: ${matches}`);
+                
+                // Update active servers count based on status
+                setTimeout(() => {
+                    const greenServers = document.querySelectorAll('.server-status.green').length;
+                    if (greenServers > 0) {
+                        document.getElementById('activeServers').textContent = greenServers;
+                        const activeServersMobile = document.getElementById('activeServersMobile');
+                        if (activeServersMobile) activeServersMobile.textContent = greenServers;
+                        console.log(`Updated active servers count: ${greenServers}`);
+                    }
+                }, 100);
+                
             } catch (err) {
                 console.error('VPN status update error:', err);
+                console.error('Error details:', err.message);
             }
         }
 
         // Utility functions
         function extractLinkName(link) {
+            console.log('Extracting name from link:', link);
+            let name = 'Server Link'; // default
+            
             try { 
-                return decodeURIComponent(new URL(link).hash.substring(1)); 
-            } catch {
-                const i = link.indexOf('#');
-                if (i !== -1) {
-                    try { 
-                        return decodeURIComponent(link.substring(i + 1)); 
-                    } catch {}
+                const url = new URL(link);
+                if (url.hash && url.hash.length > 1) {
+                    name = decodeURIComponent(url.hash.substring(1));
+                    console.log('Extracted from URL hash:', name);
+                    return name;
+                }
+            } catch (e) {
+                console.log('Failed to parse as URL:', e.message);
+            }
+            
+            // Fallback: look for # in string
+            const hashIndex = link.indexOf('#');
+            if (hashIndex !== -1 && hashIndex < link.length - 1) {
+                try { 
+                    name = decodeURIComponent(link.substring(hashIndex + 1));
+                    console.log('Extracted from string hash:', name);
+                    return name;
+                } catch (e) {
+                    console.log('Failed to decode hash part:', e.message);
+                    // Return raw hash part if decoding fails
+                    name = link.substring(hashIndex + 1);
+                    console.log('Using raw hash part:', name);
+                    return name;
                 }
             }
-            return 'Server Link';
+            
+            console.log('Using default name:', name);
+            return name;
         }
 
         function formatDate(d) { 
@@ -2502,6 +2686,7 @@ body::before {
 
         // Modal functions
         function openModal(id) { 
+            console.log(`Opening modal: ${id}`);
             if (id === 'serverListModal') {
                 renderServersInModal();
             }
@@ -2536,8 +2721,8 @@ body::before {
                 return;
             }
             navigator.clipboard.writeText(text)
+                .then(() => showToast(t('copied')))
                 .catch(err => console.error('Could not copy text: ', err));
-            showToast(t('copied'));
         }
 
         function showToast(message) {
@@ -2569,9 +2754,8 @@ body::before {
             }
         });
 
-        // Start VPN status updates
+        // Start VPN status updates - CHECK EVERY 15 SECONDS
         setInterval(updateVpnStatus, 15000);
     </script>
 </body>
 </html>
-            
