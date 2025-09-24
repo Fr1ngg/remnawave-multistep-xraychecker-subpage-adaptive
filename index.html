@@ -8,6 +8,7 @@
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#3b82f6" id="themeColor">
+    <meta name="description" content="<%= metaDescription %>" />
     <title><%= metaTitle %></title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script type="module" defer>
@@ -16,1674 +17,395 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
         :root {
-            /* Colors */
             --primary: #3b82f6;
             --primary-dark: #2563eb;
-            --primary-light: rgba(59, 130, 246, 0.1);
-            --secondary: #10b981;
-            --secondary-dark: #059669;
-            --accent: #8b5cf6;
-            --accent-dark: #7c3aed;
-            
-            /* Backgrounds */
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8fafc;
-            --bg-tertiary: #f1f5f9;
-            --bg-card: #ffffff;
-            --bg-elevated: #ffffff;
-            
-            /* Text */
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --surface-strong: #e2e8f0;
             --text-primary: #0f172a;
             --text-secondary: #475569;
-            --text-muted: #64748b;
-            --text-inverse: #ffffff;
-            
-            /* Borders */
-            --border-light: #e2e8f0;
-            --border-medium: #cbd5e1;
-            --border-dark: #94a3b8;
-            
-            /* Shadows */
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            
-            /* Glassmorphism */
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --backdrop-blur: 20px;
-            
-            /* Gradients */
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
-            --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-card: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-            
-            /* Spacing & Sizing */
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
-            --radius-full: 9999px;
-            
-            /* Animation */
-            --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            
-            /* Safe area */
-            --safe-area-top: env(safe-area-inset-top);
-            --safe-area-bottom: env(safe-area-inset-bottom);
-            --safe-area-left: env(safe-area-inset-left);
-            --safe-area-right: env(safe-area-inset-right);
+            --border: #e2e8f0;
+            --shadow: 0 20px 45px -20px rgba(15, 23, 42, 0.25);
         }
 
         .dark-theme {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-tertiary: #334155;
-            --bg-card: #1e293b;
-            --bg-elevated: #334155;
-            
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            
-            --border-light: #334155;
-            --border-medium: #475569;
-            --border-dark: #64748b;
-            
-            --glass-bg: rgba(30, 41, 59, 0.8);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-strong: #334155;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --border: #1f2937;
+            --shadow: 0 20px 45px -20px rgba(15, 23, 42, 0.6);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        *, *::before, *::after { box-sizing: border-box; }
 
         body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--gradient-bg, #667eea);
-    color: var(--text-primary);
-    position: relative;
-    overflow-x: hidden;
-    padding-top: var(--safe-area-top);
-    padding-bottom: calc(100px + var(--safe-area-bottom));
-    padding-left: var(--safe-area-left);
-    padding-right: var(--safe-area-right);
-    transition: var(--transition-base);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    min-height: 100vh;
-}
-
-body::before {
-    content: '';
-    position: absolute; 
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: -1;
-    backface-visibility: hidden;
-    transform: translateZ(0);
-    will-change: transform;
-}
-
-        /* Main Layout - Desktop Only */
-        @media (min-width: 769px) {
-            body {
-                padding-bottom: 0;
-                height: 100vh;
-                overflow: hidden;
-            }
-
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 20px;
-                height: 100vh;
-                display: grid;
-                grid-template-columns: 1fr 2fr;
-                grid-template-rows: auto auto 1fr;
-                gap: 20px;
-                grid-template-areas:
-                    "header header"
-                    "progress progress"
-                    "sidebar content";
-            }
-
-            .header {
-                grid-area: header;
-                padding: 20px 24px;
-                margin-bottom: 0;
-            }
-
-            .progress-container {
-                grid-area: progress;
-                margin-bottom: 0;
-                padding: 0 4px;
-            }
-
-            .sidebar {
-                grid-area: sidebar;
-                display: flex;
-                flex-direction: column;
-                gap: 28px;
-                max-height: calc(100vh - 200px);
-                overflow-y: auto;
-            }
-
-            .main-content {
-                grid-area: content;
-                max-height: calc(100vh - 200px);
-                overflow-y: auto;
-            }
-
-            .footer {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: transparent;
-                backdrop-filter: none;
-                border: none;
-                padding: 0;
-                z-index: 100;
-            }
-
-            .settings-btn {
-                position: static;
-                margin-left: 16px;
-            }
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: var(--background);
+            color: var(--text-primary);
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
-        /* Mobile Layout */
-        @media (max-width: 768px) {
-            body {
-                padding-bottom: calc(100px + var(--safe-area-bottom));
-            }
-
-            .container {
-                max-width: 480px;
-                margin: 0 auto;
-                padding: 20px;
-                min-height: calc(100vh - var(--safe-area-top) - var(--safe-area-bottom) - 100px);
-                display: flex;
-                flex-direction: column;
-                position: relative;
-            }
-
-            .sidebar {
-                display: none;
-            }
-
-            .main-content {
-                flex: 1;
-            }
-
-            .footer {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: var(--glass-bg);
-                backdrop-filter: blur(var(--backdrop-blur));
-                border-top: 1px solid var(--glass-border);
-                padding: 20px;
-                padding-bottom: calc(20px + var(--safe-area-bottom));
-                z-index: 100;
-            }
-
-            .settings-btn {
-                position: fixed;
-                margin-left: 5px;
-                z-index: 100;
-                background: var(--glass-bg);
-                backdrop-filter: blur(var(--backdrop-blur));
-                border: 2px solid var(--glass-border);
-                padding: 10px 22px;
-            }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px 16px 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
         }
 
-        /* Header */
         .header {
-            background: var(--glass-bg);
-            backdrop-filter: blur(var(--backdrop-blur));
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-2xl);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px 24px;
+            box-shadow: var(--shadow);
         }
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-        }
-
-        .header::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
-            animation: headerGlow 4s ease-in-out infinite alternate;
-        }
-
-        @keyframes headerGlow {
-            0% { transform: rotate(0deg) scale(1); opacity: 0.3; }
-            100% { transform: rotate(360deg) scale(1.1); opacity: 0.1; }
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
         }
 
         .logo {
-    font-size: 28px;
-    font-weight: 900;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.025em;
-    line-height: 1.2;
-    margin-bottom: 12px;
-    position: relative;
-    z-index: 1;
-    
-    /* Свечение вокруг текста */
-    text-shadow:
-        0 0 10px rgba(59, 130, 246, 0.6),
-        0 0 20px rgba(59, 130, 246, 0.4),
-        0 0 30px rgba(139, 92, 246, 0.3);
-    
-    /* Плавное появление эффекта при наведении */
-    transition: text-shadow 0.3s ease;
-}
-
-.logo:hover {
-    text-shadow:
-        0 0 15px rgba(59, 130, 246, 0.9),
-        0 0 30px rgba(59, 130, 246, 0.7),
-        0 0 45px rgba(139, 92, 246, 0.6);
-    cursor: pointer;
-}
-
-        .subtitle {
-            color: var(--text-primary);
-            font-size: 12px;
-            font-weight: 600;
-            opacity: 0.9;
-            position: relative;
-            z-index: 1;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Progress Bar */
-        .progress-container {
-                padding: 0 4px;
-                padding-top: 10px;
-                padding-bottom: 10px;
-        }
-
-        .progress-track {
-            height: 6px;
-            background: var(--glass-bg);
-            border-radius: var(--radius-full);
-            overflow: hidden;
-            backdrop-filter: blur(var(--backdrop-blur));
-            border: 1px solid var(--glass-border);
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--gradient-primary);
-            border-radius: var(--radius-full);
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        /* Step Container */
-        .step-container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(var(--backdrop-blur));
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--glass-border);
-            padding: 24px;
-            box-shadow: var(--shadow-2xl);
-            display: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .step-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: var(--gradient-primary);
-        }
-
-        .step-container.active {
-            display: block;
-            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        /* Step Header */
-        .step-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .step-number {
-            width: 50px;
-            height: 50px;
-            border-radius: var(--radius-full);
-            background: var(--gradient-primary);
-            color: var(--text-inverse);
+            font-weight: 700;
+            font-size: 1.5rem;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: 800;
-            margin: 0 auto 16px;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-        }
-
-        .step-number::after {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: var(--radius-full);
-            background: var(--gradient-primary);
-            opacity: 0.3;
-            z-index: -1;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.3; }
-            50% { transform: scale(1.1); opacity: 0.1; }
-        }
-
-        .step-title {
-            font-size: 22px;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-            letter-spacing: -0.025em;
-        }
-
-        .step-description {
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.6;
-            font-weight: 500;
-        }
-
-        /* Device Grid */
-        .device-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        @media (min-width: 769px) {
-            .device-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 16px;
-            }
-        }
-
-        .device-card {
-            background: var(--bg-card);
-            border: 2px solid var(--border-light);
-            border-radius: var(--radius-lg);
-            padding: 20px 12px;
-            cursor: pointer;
-            transition: var(--transition-base);
-            text-align: center;
-            min-height: 100px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .device-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: var(--gradient-card);
-            opacity: 0;
-            transition: var(--transition-base);
-        }
-
-        .device-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .device-card:hover::before {
-            opacity: 1;
-        }
-
-        .device-card.selected {
-            border-color: var(--primary);
-            background: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .device-card.selected::before {
-            opacity: 1;
-            background: var(--gradient-primary);
-            opacity: 0.1;
-        }
-
-        .device-icon {
-            width: 40px;
-            height: 40px;
-            color: var(--primary);
-            margin-bottom: 8px;
-            position: relative;
-            z-index: 1;
-            transition: var(--transition-base);
-        }
-
-        .device-card:hover .device-icon {
-            transform: scale(1.1);
-            color: var(--primary-dark);
-        }
-
-        .device-name {
-            font-weight: 600;
             color: var(--text-primary);
-            font-size: 14px;
-            position: relative;
-            z-index: 1;
         }
 
-        /* Stats Block */
-        .stats-block {
-            background: var(--glass-bg);
-            backdrop-filter: blur(var(--backdrop-blur));
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stats-block::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--gradient-accent);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 12px;
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-light);
-            transition: var(--transition-base);
-        }
-
-        .stat-item:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .stat-number {
-            font-size: 24px;
-            font-weight: 900;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 4px;
-            line-height: 1;
-        }
-
-        .stat-label {
-            color: var(--text-secondary);
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .locations-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            justify-content: center;
-            margin-bottom: 16px;
-        }
-
-        .location-tag {
-            background: var(--bg-card);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-full);
-            padding: 4px 8px;
-            font-size: 10px;
-            font-weight: 500;
-            color: var(--text-primary);
-            font-family: "Twemoji Country Flags", 'Inter', system-ui, sans-serif;
-            transition: var(--transition-fast);
-        }
-
-        .location-tag:hover {
-            background: var(--primary-light);
-            border-color: var(--primary);
-            transform: scale(1.05);
-        }
-
-        /* Server List Button */
-        .server-list-btn {
-            width: 100%;
-            background: var(--gradient-primary);
-            color: var(--text-inverse);
-            border: none;
-            border-radius: var(--radius-md);
-            padding: 12px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-base);
+        .controls {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            overflow: hidden;
         }
 
-        .server-list-btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
-            transform: translateX(-100%);
-            transition: var(--transition-base);
-        }
-
-        .server-list-btn:hover {
-            box-shadow: var(--shadow-xl);
-            transform: translateY(-2px);
-        }
-
-        .server-list-btn:hover::before {
-            transform: translateX(100%);
-        }
-
-        .server-list-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Apps Grid */
-        .apps-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        @media (min-width: 769px) {
-            .apps-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 16px;
-            }
-        }
-
-        /* Mobile swipeable apps */
-        @media (max-width: 768px) {
-            .apps-grid {
-                display: flex;
-                gap: 16px;
-                padding: 0 4px;
-                padding-top: 5px;
-                margin-bottom: 32px;
-                overflow-x: auto;
-                scroll-snap-type: x mandatory;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                -ms-overflow-style: none;
-            }
-
-            .apps-grid::-webkit-scrollbar {
-                display: none;
-            }
-        }
-
-        .app-card {
-            background: var(--bg-card);
-            border: 2px solid var(--border-light);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            text-align: center;
-            transition: var(--transition-base);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Desktop apps layout */
-        @media (min-width: 769px) {
-            .app-card {
-                min-height: 160px;
-            }
-        }
-
-        /* Mobile apps layout */
-        @media (max-width: 768px) {
-            .app-card {
-                min-width: 280px;
-                min-height: 220px;
-                scroll-snap-align: center;
-                flex-shrink: 0;
-            }
-        }
-
-        .app-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            transform: scaleX(0);
-            transition: var(--transition-base);
-        }
-
-        .app-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .app-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .app-card.selected {
-            border-color: var(--primary);
-            background: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-            position: relative;
-        }
-
-        .app-card.selected::before {
-            transform: scaleX(1);
-        }
-
-        .app-card.selected::after {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: var(--radius-lg);
-            background: var(--gradient-primary);
-            opacity: 0.3;
-            z-index: -1;
-            animation: pulse 2s infinite;
-        }
-
-        .app-card.featured {
-            border-color: var(--secondary);
-            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(16, 185, 129, 0.05) 100%);
-        }
-
-        .app-card.featured::before {
-            transform: scaleX(1);
-        }
-
-        .featured-badge {
-            position: absolute;
-            top: -1px;
-            right: -1px;
-            background: var(--secondary);
-            color: var(--text-inverse);
-            padding: 4px 8px;
-            border-radius: 0 var(--radius-lg) 0 var(--radius-md);
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .app-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .app-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: var(--radius-md);
-            background: var(--gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-inverse);
-            box-shadow: var(--shadow-lg);
-            transition: var(--transition-base);
-        }
-
-        .app-name {
-            font-weight: 700;
-            font-size: 16px;
-            color: var(--text-primary);
-        }
-
-        .app-download-btn {
-            width: 100%;
-            margin-top: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            transition: var(--transition-base);
-        }
-
-        /* Status Badges */
-        .badge {
-            padding: 4px 8px;
-            border-radius: var(--radius-full);
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .badge-active {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--secondary);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .badge-disabled, .badge-limited, .badge-expired {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        /* Servers List */
-        .server-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-lg);
-            margin-bottom: 8px;
-            transition: var(--transition-base);
-        }
-
-        .server-item:hover {
-            background: var(--primary-light);
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .server-info {
-            flex: 1;
-            text-align: left;
-            min-width: 0;
-        }
-
-        .server-name {
-            font-weight: 600;
-            margin-bottom: 2px;
-            font-family: "Twemoji Country Flags", 'Inter', system-ui, sans-serif;
-            font-size: 13px;
-            word-break: break-word;
-        }
-
-        .server-protocol {
-            font-size: 10px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .server-status {
-            font-size: 16px;
-            margin-right: 8px;
-            min-width: 20px;
-        }
-
-        .server-status.green {
-            color: #10b981;
-        }
-
-        .server-status.red {
-            color: #ef4444;
-        }
-
-        .server-actions {
-            display: flex;
-            gap: 6px;
-        }
-
-        /* User Profile Styles */
-        .user-info {
-            margin-bottom: 20px;
-        }
-
-        .user-info-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .user-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: var(--radius-full);
-            background: var(--gradient-primary);
-            color: var(--text-inverse);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: 800;
-            box-shadow: var(--shadow-md);
-            flex-shrink: 0;
-        }
-
-        .user-basic-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .user-basic-info h3 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: var(--text-primary);
-            word-break: break-word;
-        }
-
-        .user-status-badge {
-            display: flex;
-            gap: 6px;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: var(--bg-secondary);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-light);
-        }
-
-        .info-label {
-            font-weight: 500;
-            color: var(--text-secondary);
-            font-size: 12px;
-        }
-
-        .info-value {
-            font-weight: 600;
-            color: var(--text-primary);
-            font-size: 12px;
-            text-align: right;
-        }
-
-        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 12px 20px;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
+            gap: 8px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            padding: 10px 16px;
+            font-weight: 500;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: var(--transition-base);
-            white-space: nowrap;
-            min-height: 40px;
-            touch-action: manipulation;
-            -webkit-appearance: none;
-            position: relative;
-            overflow: hidden;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+            background: var(--surface-strong);
+            color: var(--text-primary);
         }
 
-        .btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
-            transform: translateX(-100%);
-            transition: var(--transition-base);
-        }
-
-        .btn:hover::before {
-            transform: translateX(100%);
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
+        .btn:hover { transform: translateY(-1px); }
 
         .btn-primary {
-            background: var(--gradient-primary);
-            color: var(--text-inverse);
-            box-shadow: var(--shadow-lg);
+            background: var(--primary);
+            color: #ffffff;
         }
 
-        .btn-primary:hover {
-            box-shadow: var(--shadow-xl);
-            transform: translateY(-2px);
-        }
-
-        .btn-primary:disabled {
-            background: var(--border-medium);
-            color: var(--text-muted);
-            cursor: not-allowed;
-            opacity: 0.6;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-primary:disabled::before {
-            display: none;
-        }
-
-        .btn-secondary {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            border: 2px solid var(--border-light);
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--primary);
-            background: var(--primary-light);
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-sm {
-            padding: 8px 12px;
-            font-size: 12px;
-            min-height: 32px;
-        }
+        .btn-primary:hover { background: var(--primary-dark); }
 
         .btn-icon {
-            padding: 8px;
-            min-width: 36px;
+            padding: 10px 12px;
         }
 
-        .btn-group {
+        .btn-icon svg { width: 20px; height: 20px; }
+
+        main {
             display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             gap: 12px;
-            width: 100%;
-        }
-
-        .btn-group .btn {
-            flex: 1;
-            min-width: 0;
-        }
-
-        /* Setup Steps */
-        .app-setup-steps {
-            background: var(--bg-card);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-lg);
             margin-bottom: 20px;
-            overflow: hidden;
         }
 
-        .setup-step {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-light);
-            transition: var(--transition-base);
-        }
-
-        .setup-step:last-child {
-            border-bottom: none;
-        }
-
-        .setup-step:hover {
-            background: var(--bg-secondary);
-        }
-
-        .setup-step h4 {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .setup-step-number {
-            min-width: 24px;
-            height: 24px;
-            background: var(--primary);
-            color: var(--text-inverse);
-            border-radius: var(--radius-full);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        /* Footer */
-        .footer-content {
-            max-width: 480px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: center;
-        }
-
-        .profile-btn {
-            display: none;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: var(--bg-card);
-            border: 2px solid var(--border-light);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-            text-decoration: none;
+        .card-title {
+            font-size: 1.2rem;
             font-weight: 600;
-            font-size: 14px;
-            transition: var(--transition-base);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+
+        .info-row:last-child { border-bottom: none; }
+
+        .info-label { color: var(--text-secondary); }
+
+        .info-value { font-weight: 600; }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-active { background: rgba(16, 185, 129, 0.15); color: #047857; }
+        .badge-disabled { background: rgba(248, 113, 113, 0.15); color: #b91c1c; }
+        .badge-limited { background: rgba(251, 191, 36, 0.2); color: #b45309; }
+        .badge-expired { background: rgba(148, 163, 184, 0.2); color: #475569; }
+
+        .links-section .link-item {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            margin-bottom: 12px;
+            background: rgba(148, 163, 184, 0.08);
+        }
+
+        .link-item:last-child { margin-bottom: 0; }
+
+        .link-name { font-weight: 600; word-break: break-word; }
+
+        .link-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .apps-section .platform-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .platform-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 999px;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
             cursor: pointer;
+            transition: background 0.15s ease;
         }
 
-        .profile-btn:hover {
-            border-color: var(--primary);
-            background: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .platform-tab.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: transparent;
         }
 
-        /* Modals */
+        .apps-container { display: flex; flex-direction: column; gap: 16px; }
+
+        .featured-apps-row, .apps-grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .app-card {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: rgba(148, 163, 184, 0.08);
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .app-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+        .app-header { display: flex; align-items: center; gap: 12px; }
+
+        .app-icon svg { width: 32px; height: 32px; }
+
+        .featured-badge {
+            align-self: flex-start;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .spoiler-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(148, 163, 184, 0.08);
+        }
+
+        .spoiler-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .spoiler-content.open { max-height: 1000px; padding-top: 12px; }
+
         .modal {
-            display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            display: none;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            padding-top: calc(20px + var(--safe-area-top));
-            padding-bottom: calc(20px + var(--safe-area-bottom));
-            padding-left: calc(20px + var(--safe-area-left));
-            padding-right: calc(20px + var(--safe-area-right));
+            padding: 24px;
+            z-index: 1000;
         }
 
-        .modal.active {
-            display: flex;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        .modal.active { display: flex; }
 
         .modal-content {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            width: 100%;
-            max-width: 400px;
-            max-height: calc(100vh - 40px - var(--safe-area-top) - var(--safe-area-bottom));
+            width: min(540px, 100%);
+            max-height: 90vh;
             overflow-y: auto;
-            box-shadow: var(--shadow-2xl);
-            border: 1px solid var(--border-light);
-            animation: slideInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Server List Modal specific styles */
-        .modal-content.server-list-modal {
-            max-width: 500px;
-        }
-
-        @keyframes slideInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.9) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            position: relative;
         }
 
         .modal-header {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .modal-title {
-            font-size: 18px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-family: "Twemoji Country Flags", 'Inter', system-ui, sans-serif;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .modal-close {
-            background: none;
             border: none;
-            font-size: 20px;
+            background: transparent;
+            font-size: 1.5rem;
             cursor: pointer;
             color: var(--text-secondary);
-            padding: 6px;
-            border-radius: var(--radius-md);
-            transition: var(--transition-base);
-            min-width: 32px;
-            min-height: 32px;
+        }
+
+        .step {
             display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: rgba(148, 163, 184, 0.08);
+            margin-bottom: 16px;
+        }
+
+        .step:last-child { margin-bottom: 0; }
+
+        .step-number {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+            margin-right: 8px;
         }
 
-        .modal-close:hover {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-        }
+        .step-title { font-weight: 600; display: flex; align-items: center; gap: 8px; }
 
-        .modal-body {
-            padding: 20px;
-        }
+        .step-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 
-        /* QR Code */
-        .qr-container {
-            text-align: center;
-        }
+        .qr-container { display: flex; flex-direction: column; align-items: center; gap: 12px; }
 
-        .qr-code {
-            margin: 16px auto;
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-lg);
-            background: white;
-            padding: 16px;
-            display: inline-block;
-            box-shadow: var(--shadow-md);
-        }
-
-        .qr-code img {
-            max-width: 100%;
-            height: auto;
-        }
-
-        /* Toast */
         .toast {
             position: fixed;
-            bottom: calc(20px + var(--safe-area-bottom));
-            right: calc(20px + var(--safe-area-right));
-            background: var(--secondary);
-            color: var(--text-inverse);
-            padding: 12px 20px;
-            border-radius: var(--radius-md);
-            z-index: 1001;
-            transform: translateX(400px);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--shadow-xl);
-            font-weight: 600;
-            font-size: 14px;
+            bottom: 24px;
+            right: 24px;
+            background: var(--text-primary);
+            color: var(--surface);
+            padding: 12px 16px;
+            border-radius: 12px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 1100;
         }
 
-        .toast.show {
-            transform: translateX(0);
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        .footer {
+            text-align: center;
+            color: var(--text-secondary);
+            padding-bottom: 24px;
         }
 
-        /* Responsive Design */
-        @media (max-width: 480px) {
-            .header {
-                padding: 16px 20px;
-            }
-            .profile-btn {
-                display: flex;
-            }
-
-            .logo {
-                font-size: 22px;
-            }
-
-            .subtitle {
-                font-size: 11px;
-            }
-            
-            .step-container {
-                padding: 20px 16px;
-            }
-
-            .device-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
-
-            .device-card {
-                padding: 16px 10px;
-                min-height: 90px;
-            }
-
-            .device-icon {
-                width: 36px;
-                height: 36px;
-            }
-
-            .device-name {
-                font-size: 13px;
-            }
-
-            .apps-grid {
-                gap: 14px;
-            }
-            
-            .btn {
-                font-size: 13px;
-                min-height: 36px;
-            }
-
-            .btn-sm {
-                padding: 6px 10px;
-                font-size: 11px;
-                min-height: 28px;
-            }
-
-            .step-title {
-                font-size: 20px;
-            }
-
-            .server-item {
-                padding: 12px;
-            }
-
-            .server-name {
-                font-size: 12px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
-            .modal-content {
-                margin: 10px;
-                max-height: calc(100vh - 20px - var(--safe-area-top) - var(--safe-area-bottom));
-            }
-
-            .modal-header, .modal-body {
-                padding: 16px;
-            }
-
-            .toast {
-                right: 12px;
-                bottom: calc(12px + var(--safe-area-bottom));
-                left: 12px;
-                transform: translateY(100px);
-                text-align: center;
-            }
-
-            .toast.show {
-                transform: translateY(0);
-            }
-
-            .footer {
-                padding: 16px;
-                padding-bottom: calc(16px + var(--safe-area-bottom));
-            }
-
-            .setup-step {
-                padding: 14px;
-            }
-
-            .stats-block {
-                padding: 16px;
-                margin-bottom: 16px;
-            }
-        }
-
-        /* Dark theme specific adjustments */
-        .dark-theme .qr-code {
-            background: white;
-            border-color: var(--border-medium);
-        }
-
-        /* Utilities */
-        .w-4 { width: 1rem; }
-        .h-4 { height: 1rem; }
-        .w-5 { width: 1.25rem; }
-        .h-5 { height: 1.25rem; }
-        .w-6 { width: 1.5rem; }
-        .h-6 { height: 1.5rem; }
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-
-        /* iOS specific improvements */
-        @supports (-webkit-touch-callout: none) {
-            .btn {
-                -webkit-appearance: none;
-                -webkit-user-select: none;
-            }
-            
-            input, button, select, textarea {
-                -webkit-appearance: none;
-                border-radius: 0;
-            }
-            
-            .modal-content {
-                -webkit-overflow-scrolling: touch;
-            }
-        }
-
-        /* Prevent horizontal scroll */
-        html, body {
-            overflow-x: hidden;
-            width: 100%;
-            height: 100%;
-            min-height: 100vh;
-        }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-medium);
-            border-radius: var(--radius-full);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--border-dark);
+        @media (max-width: 600px) {
+            .header { padding: 16px; }
+            .controls { flex-wrap: wrap; justify-content: flex-end; }
+            .card { padding: 20px; }
+            .modal { padding: 16px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="logo"><%= metaTitle %></div>
-            <div class="subtitle"><%= metaDescription %></div>
-        </div>
-
-        <!-- Progress Bar -->
-        <div class="progress-container">
-            <div class="progress-track">
-                <div class="progress-fill" id="progressFill" style="width: 33%"></div>
-            </div>
-        </div>
-
-        <!-- Sidebar (Desktop Only) -->
-        <div class="sidebar">
-            <!-- Statistics Block -->
-            <div class="stats-block" id="statsBlock">
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-number" id="activeServers">-</div>
-                        <div class="stat-label" data-key="active_servers">Active Servers</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number" id="totalLocations">-</div>
-                        <div class="stat-label" data-key="total_locations">Locations</div>
-                    </div>
-                </div>
-                <div class="locations-list">
-                    <div class="locations-tags" id="locationsTags">
-                        <!-- Locations will be populated by JavaScript -->
-                    </div>
-                </div>
-                
-                <!-- Server List Button -->
-                <button class="server-list-btn" onclick="openModal('serverListModal')">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                    </svg>
-                    <span data-key="server_list">Server List</span>
-                </button>
-            </div>
-
-            <!-- Profile Info (Desktop Only) -->
-            <div class="stats-block" id="profileSidebar">
-                <div id="profileSidebarContent">
-                    <!-- Profile info will be populated by JavaScript -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Step 1: Device Selection -->
-            <div class="step-container active" id="step1">
-                <div class="step-header">
-                    <div class="step-number">1</div>
-                    <h2 class="step-title" data-key="select_device">Select Your Device</h2>
-                    <p class="step-description" data-key="device_description">Choose your device type to get the best setup experience</p>
-                </div>
-
-                <div class="device-grid" id="deviceGrid">
-                    <!-- Devices will be populated by JavaScript -->
-                </div>
-
-                <button class="btn btn-primary" onclick="nextStep()" id="deviceNextBtn" style="width: 100%; margin-bottom: 20px; font-size: 16px; padding: 16px;" disabled>
-                    <span data-key="continue">Continue</span>
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </button>
-
-                <!-- Statistics Block (Mobile Only) -->
-                <div class="stats-block" id="statsBlockMobile" style="display: none;">
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-number" id="activeServersMobile">-</div>
-                            <div class="stat-label" data-key="active_servers">Active Servers</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="totalLocationsMobile">-</div>
-                            <div class="stat-label" data-key="total_locations">Locations</div>
-                        </div>
-                    </div>
-                    <div class="locations-list">
-                        <div class="locations-tags" id="locationsTagsMobile">
-                            <!-- Locations will be populated by JavaScript -->
-                        </div>
-                    </div>
-                    
-                    <!-- Server List Button (Mobile) -->
-                    <button class="server-list-btn" onclick="openModal('serverListModal')">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                        </svg>
-                        <span data-key="server_list">Server List</span>
+        <header class="header">
+            <div class="header-top">
+                <div class="logo"><%= metaTitle %></div>
+                <div class="controls">
+                    <button class="btn btn-icon" onclick="openModal('settingsModal')">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-1.14 1.603-1.14 1.902 0a1.724 1.724 0 002.573 1.066c1.024-.593 2.15.532 1.557 1.556a1.724 1.724 0 001.066 2.573c1.14.3 1.14 1.603 0 1.902a1.724 1.724 0 00-1.066 2.573c.593 1.024-.532 2.15-1.556 1.557a1.724 1.724 0 00-2.574 1.066c-.3 1.14-1.603 1.14-1.902 0a1.724 1.724 0 00-2.573-1.066c-1.024.593-2.15-.532-1.557-1.556a1.724 1.724 0 00-1.066-2.574c-1.14-.3-1.14-1.602 0-1.901a1.724 1.724 0 001.066-2.574c-.593-1.024.532-2.15 1.556-1.557.966.56 2.18.198 2.574-1.066z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span class="btn-text" data-key="settings">Settings</span>
+                    </button>
+                    <button class="btn btn-primary btn-icon" onclick="showSubscriptionModal()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.102m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                        <span class="btn-text" data-key="get_link">Get Link</span>
                     </button>
                 </div>
             </div>
+            <div class="subtitle" data-key="page_subtitle"><%= metaDescription %></div>
+        </header>
 
-            <!-- Step 2: App Installation -->
-            <div class="step-container" id="step2">
-                <div class="step-header">
-                    <div class="step-number">2</div>
-                    <h2 class="step-title" data-key="install_app">Install App</h2>
-                    <p class="step-description" data-key="app_description">Download and install the recommended app for your device</p>
-                </div>
+        <main id="mainContent"></main>
 
-                <div class="apps-grid" id="appsGrid">
-                    <!-- Apps will be populated by JavaScript -->
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-secondary" onclick="prevStep()">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                        </svg>
-                        <span data-key="back">Back</span>
-                    </button>
-                    <button class="btn btn-primary" onclick="nextStep()" id="appNextBtn" disabled>
-                        <span data-key="app_installed">App Installed</span>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Step 3: Connect -->
-            <div class="step-container" id="step3">
-                <div class="step-header">
-                    <div class="step-number">3</div>
-                    <h2 class="step-title" data-key="connect_now">Connect Now</h2>
-                    <p class="step-description" data-key="connect_description">Your account details and available servers</p>
-                </div>
-
-                <!-- Main Connect Button -->
-                <button class="btn btn-primary" id="connectBtn" onclick="handleConnect()" style="width: 100%; margin-bottom: 12px; font-size: 16px; padding: 16px;">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.102m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                    </svg>
-                    <span data-key="connect">Connect</span>
-                </button>
-
-                <!-- Copy Subscription Link Button -->
-                <button class="btn btn-secondary" onclick="copySubscriptionLink()" style="width: 100%; margin-bottom: 20px; font-size: 16px; padding: 16px;">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                    </svg>
-                    <span data-key="copy_subscription_link">Copy Subscription Link</span>
-                </button>
-
-                <!-- App Setup Steps -->
-                <div class="app-setup-steps" id="appSetupSteps">
-                    <!-- Setup steps will be populated by JavaScript -->
-                </div>
-
-                <button class="btn btn-secondary" onclick="prevStep()" style="width: 100%;">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                    <span data-key="back">Back</span>
-                </button>
-            </div>
-        </div>
+        <footer class="footer"><%= metaDescription %></footer>
     </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        <div class="footer-content">
-            <button class="profile-btn" onclick="openModal('profileModal')">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
-                <span data-key="profile">Profile</span>
-            </button>
-            <!-- Settings Button -->
-            <button class="btn btn-secondary btn-icon settings-btn" onclick="openModal('settingsModal')">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
-            </button>
-        </div>
-    </div>
-
-    <!-- Modals -->
     <div class="modal" id="settingsModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1691,40 +413,17 @@ body::before {
                 <button class="modal-close" onclick="closeModal('settingsModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <div style="margin-bottom: 20px;">
-                    <div style="font-weight: 600; margin-bottom: 10px;" data-key="theme">Theme</div>
-                    <div style="display: flex; gap: 6px;">
-                        <button class="btn btn-sm btn-secondary" onclick="setTheme('light')" data-key="light">Light</button>
-                        <button class="btn btn-sm btn-secondary" onclick="setTheme('dark')" data-key="dark">Dark</button>
-                        <button class="btn btn-sm btn-secondary" onclick="setTheme('auto')" data-key="auto">Auto</button>
+                <div class="step">
+                    <div class="step-title" data-key="theme">Theme</div>
+                    <div class="step-buttons">
+                        <button class="btn" onclick="setTheme('light')" data-key="light">Light</button>
+                        <button class="btn" onclick="setTheme('dark')" data-key="dark">Dark</button>
+                        <button class="btn" onclick="setTheme('auto')" data-key="auto">Auto</button>
                     </div>
                 </div>
-                <div>
-                    <div style="font-weight: 600; margin-bottom: 10px;" data-key="language">Language</div>
-                    <div style="display: flex; gap: 6px;">
-                        <button class="btn btn-sm btn-secondary" onclick="setLanguage('en')">English</button>
-                        <button class="btn btn-sm btn-secondary" onclick="setLanguage('ru')">Русский</button>
-                        <button class="btn btn-sm btn-secondary" onclick="setLanguage('fa')">فارسی</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="profileModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
-                    <span data-key="profile">Profile</span>
-                </h3>
-                <button class="modal-close" onclick="closeModal('profileModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div id="profileInfo">
-                    <!-- Profile info will be populated by JavaScript -->
+                <div class="step">
+                    <div class="step-title" data-key="language">Language</div>
+                    <div class="step-buttons" id="languageButtons"></div>
                 </div>
             </div>
         </div>
@@ -1739,26 +438,48 @@ body::before {
             <div class="modal-body">
                 <div class="qr-container">
                     <div id="qrCode"></div>
-                    <p data-key="scan_with_phone" style="margin-top: 1rem;">Scan with your phone</p>
+                    <p data-key="scan_with_phone">Scan with your phone</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="serverListModal">
-        <div class="modal-content server-list-modal">
+    <div class="modal" id="platformModal">
+        <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                    </svg>
-                    <span data-key="server_list">Server List</span>
-                </h3>
-                <button class="modal-close" onclick="closeModal('serverListModal')">&times;</button>
+                <h3 class="modal-title" data-key="select_platform">Select Platform</h3>
+                <button class="modal-close" onclick="closeModal('platformModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="platformModalBody"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="appModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="appModalTitle"></h3>
+                <button class="modal-close" onclick="closeModal('appModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="appModalBody"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="subscriptionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-key="subscription_link">Subscription Link</h3>
+                <button class="modal-close" onclick="closeModal('subscriptionModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <div id="serversList">
-                    <!-- Servers will be populated by JavaScript -->
+                <div class="qr-container">
+                    <div id="subscriptionQrCode"></div>
+                    <p data-key="scan_with_phone">Scan with your phone</p>
+                </div>
+                <div class="step-buttons" style="justify-content: center; display: flex;">
+                    <button class="btn btn-primary" onclick="copySubscriptionUrl()">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                        <span data-key="copy">Copy</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -1767,145 +488,204 @@ body::before {
     <div class="toast" id="toast"></div>
 
     <script>
-        // Global variables
-        let panelData = null, appsConfig = null, currentLanguage = 'en', currentPlatform = 'android', toastTimeout = null;
-        let currentStep = 1;
-        let selectedDevice = null;
-        let selectedApp = null;
+        let panelData = null;
+        let appsConfig = null;
+        let currentLanguage = 'en';
+        let currentPlatform = 'android';
+        let toastTimeout = null;
+        let validPlatforms = [];
+        let branding = null;
 
-        // App icons (empty as requested)
-        const appIcons = {
-                        'happ': `<svg class="w-6 h-6" viewBox="0 0 32 32" fill="currentColor">
-                <path d="M13.4,19.6l-7.9,7.9L5,30.4h6.6L13.4,19.6z" />
-                <path d="M13.2,13.5L14.6,5l-7.9,7.9L4.2,27.4l7.9-7.9l0.2-1.2h1l4.9-4.9H13.2z" />
-                <path d="M25.4,19.6L27.8,5l-7.9,7.9l-0.1,0.7h-0.6l-4.9,4.9h4.7l-1.5,9L25.4,19.6z" />
-                <path d="M18.7,27.5l-0.5,2.9h6.6l1.8-10.8L18.7,27.5z" />
-                <path d="M13.6,4.9l0.6-3.3H7.5L5.6,12.8L13.6,4.9z" />
-                <path d="M18.8,12.8l7.9-7.9l0.6-3.3h-6.6L18.8,12.8z" />
-            </svg>`,
-            'sing-box': `<svg class="w-6 h-6" viewBox="0 0 32 32" fill="currentColor">
-                <path d="M28.845 22.699c.608-.37.998-1.235 1-1.854V11.2s.008-.403-.417-.673L16.825 2.649s-1.48-.95-2.921 0L2.407 10.324c-.536.37-.558 1.036-.558 1.036l-.004 9.339s-.013 1.171.5 1.5l12.5 8 .048-11-12.158-7.694s-.556-.351.158-.76L14.345 3.2c1.032-.628 2.06-.03 2.06-.03l12.556 7.687c.604.254.158.444.158.444l-2.849 1.805s-.404.357-.888.112L12.356 5.134l-.48.316 13.47 8.249v3.5a.93.93 0 0 1-.362.745l-3.777 2.515s-.348.25-.362-.26v-3.5L7.43 8.359l-.542.369 13.036 8.158s.384.207-.056.446l-3.32 1.982v9.885s-.002.637-.702 1c0 0 .521.128 1.467-.432z"/>
-            </svg>`,
-            'shadowrocket': `<svg class="w-6 h-6" viewBox="0 0 32 32" fill="currentColor">
-                <path d="M26.76 23.819 20.1 22.658c-.837 1.628-2.32 2.309-4.238 2.302-1.91-.007-3.417-.646-4.3-2.344-2.183.385-4.39.77-6.734 1.182.061-.817.084-1.587.19-2.35.26-1.835 1.081-3.443 2.512-4.79.25-.233.357-.48.335-.845-.19-3.113.182-6.157 1.521-9.05a14.638 14.638 0 0 1 4.513-5.6c.51-.385 1.057-.729 1.628-1.017.205-.103.601-.083.807.027 1.3.742 2.473 1.65 3.424 2.728 1.118 1.265 2.031 2.667 2.678 4.192 1.164 2.763 1.59 5.614 1.4 8.549-.03.432.084.762.434 1.099 1.81 1.711 2.519 3.82 2.541 6.143 0 .268.008.543.016.811.007.014-.008.028-.069.124zm-1.827-1.814c.038-.103.053-.13.053-.158a.815.815 0 0 0 0-.193c-.114-1.903-.844-3.56-2.374-4.906-.16-.138-.327-.364-.32-.543.115-1.828.19-3.656-.38-5.442-.32-1.004-.548-2.041-.99-2.997-.958-2.075-2.312-3.91-4.397-5.229-.624-.399-.685-.399-1.294.028-2.58 1.786-4.185 4.157-5.068 6.947-.654 2.089-.814 4.22-.639 6.377.03.371-.091.625-.388.873-.867.707-1.46 1.587-1.856 2.577a7.172 7.172 0 0 0-.518 2.597l5.73-1.024c.122.227.22.433.335.626.631 1.044 1.598 1.642 2.93 1.683 1.377.041 2.396-.522 3.104-1.58.434-.653.434-.653 1.278-.502.038.007.069.014.107.02l4.687.846zM15.802 34c-1.126-1.546-2.222-3.03-2.55-4.824-.243-1.326.617-2.604 1.941-3.058.898-.31 1.918.02 2.587.81.624.743.822 1.595.632 2.482-.373 1.718-1.415 3.147-2.61 4.59zm-.099-2.24c.107 0 .213 0 .312-.007.342-.756.715-1.498 1.027-2.268.229-.563.023-1.1-.327-1.58-.373-.523-1.05-.57-1.545-.138-.449.392-.7.9-.525 1.43.297.865.7 1.704 1.058 2.563z"/><path d="M15.772 7.647c1.955-.048 3.477 1.374 3.485 2.996.007 1.738-1.492 3.12-3.387 3.127-1.894.006-3.332-1.327-3.393-3.058-.054-1.498 1.575-3.148 3.295-3.065zm1.94 3.106C17.727 9.79 16.928 9.014 15.9 9c-1.065-.014-2.009.742-1.994 1.724.015.949.822 1.698 1.865 1.711 1.103.007 1.925-.7 1.94-1.683z"/>
-            </svg>`,
-            'v2rayng': `<svg class="w-6 h-6" viewBox="0 0 32 32" fill="currentColor">
-                <path d="M0 1.86298V3.72596H1.87780H3.75560L3.80567 17.3630L3.88078 31L18.4024 15.6987C26.3893 7.30288 32.9741 0.322916 32.9992 0.198717C33.0492 0.0993585 30.8460 -4.76837e-07 28.1169 -4.76837e-07H23.1595L16.2742 6.38381L9.38899 12.7428L9.26380 6.43349L9.13862 0.124198L4.58183 0.049679L0 -4.76837e-07V1.86298Z"/>
-            </svg>`,
-            'android': `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M6,18c0,0.55 0.45,1 1,1h1v3.5c0,0.83 0.67,1.5 1.5,1.5s1.5,-0.67 1.5,-1.5V19h2v3.5c0,0.83 0.67,1.5 1.5,1.5s1.5,-0.67 1.5,-1.5V19h1c0.55,0 1,-0.45 1,-1V8H6v10zM3.5,8C2.67,8 2,8.67 2,9.5v7c0,0.83 0.67,1.5 1.5,1.5S5,17.33 5,16.5v-7C5,8.67 4.33,8 3.5,8zM20.5,8C19.67,8 19,8.67 19,9.5v7c0,0.83 0.67,1.5 1.5,1.5s1.5,-0.67 1.5,-1.5v-7C22,8.67 21.33,8 20.5,8zM15.53,2.16l1.3,-1.3c0.2,-0.2 0.2,-0.51 0,-0.71c-0.2,-0.2 -0.51,-0.2 -0.71,0l-1.48,1.48C13.85,1.23 12.95,1 12,1c-0.96,0 -1.86,0.23 -2.66,0.63L7.85,0.15c-0.2,-0.2 -0.51,-0.2 -0.71,0c-0.2,0.2 -0.2,0.51 0,0.71l1.31,1.31C6.97,3.26 6,5.01 6,7h12C18,5.01 17.03,3.25 15.53,2.16zM10,5H9V4h1V5zM15,5h-1V4h1V5z"/></svg>`,
-            'ios': `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22.00 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.09,22.00C7.79,22.05 6.80,20.68 5.96,19.47C4.25,17.00 2.94,12.45 4.70,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.10,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.10 19.56,8.82C19.47,8.88 17.39,10.10 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2.00C16.07,3.17 15.60,4.35 14.90,5.19C14.21,6.04 13.07,6.70 11.95,6.61C11.80,5.46 12.36,4.26 13,3.5Z"/></svg>`,
-            'pc': `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16A2,2 0 0,0 3,18H10V20H8V22H16V20H14V18H21A2,2 0 0,0 23,16V4C23,2.89 22.1,2 21,2Z"/></svg>`,
-            'tv': `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M21,3H3C1.89,3 1,3.89 1,5V17A2,2 0 0,0 3,19H8V21H16V19H21A2,2 0 0,0 23,17V5C23,3.89 22.11,3 21,3M21,17H3V5H21V17Z"/></svg>`
+        const langFullNames = {
+            en: 'English',
+            ru: 'Русский',
+            fa: 'فارسی',
+            zh: '中文',
+            tr: 'Türkçe',
+            uz: 'Oʻzbekcha'
         };
 
-        // Translations
+        const appIcons = {
+            happ: `<svg class="w-6 h-6" viewBox="0 0 32 32" fill="currentColor"><path d="M13.4 19.6l-7.9 7.9L5 30.4h6.6l1.8-10.8z"/><path d="M13.2 13.5L14.6 5l-7.9 7.9L4.2 27.4l7.9-7.9.2-1.2h1l4.9-4.9h-5.2z"/><path d="M25.4 19.6L27.8 5l-7.9 7.9-.1.7h-.6l-4.9 4.9h4.7l-1.5 9 7.9-7.9z"/><path d="M18.7 27.5l-.5 2.9h6.6l1.8-10.8-7.9 7.9z"/><path d="M13.6 4.9l.6-3.3H7.5L5.6 12.8l8-7.9z"/><path d="M18.8 12.8l7.9-7.9.6-3.3h-6.6l-1.9 11.2z"/></svg>`,
+            'sing-box': `<svg class="w-6 h-6" viewBox="0 0 32 32" fill="currentColor"><path d="M28.845 22.699c.608-.37.998-1.235 1-1.854V11.2s.008-.403-.417-.673L16.825 2.649s-1.48-.95-2.921 0L2.407 10.324c-.536.37-.558 1.036-.558 1.036l-.004 9.339s-.013 1.171.5 1.5l12.5 8 .048-11-12.158-7.694s-.556-.351.158-.76L14.345 3.2c1.032-.628 2.06-.03 2.06-.03l12.556 7.687c.604.254.158.444.158.444l-2.849 1.805s-.404.357-.888.112L12.356 5.134l-.48.316 13.47 8.249v3.5a.93.93 0 0 1-.362.745l-3.777 2.515s-.348.25-.362-.26v-3.5L7.43 8.359l-.542.369 13.036 8.158s.384.207-.056.446l-3.32 1.982v9.885s-.002.637-.702 1c0 0 .521.128 1.467-.432z"/></svg>`,
+            shadowrocket: `<svg class="w-6 h-6" viewBox="0 0 32 32" fill="currentColor"><path d="M26.76 23.819 20.1 22.658c-.837 1.628-2.32 2.309-4.238 2.302-1.91-.007-3.417-.646-4.3-2.344-2.183.385-4.39.77-6.734 1.182.061-.817.084-1.587.19-2.35.26-1.835 1.081-3.443 2.512-4.79.25-.233.357-.48.335-.845-.19-3.113.182-6.157 1.521-9.05a14.638 14.638 0 0 1 4.513-5.6c.51-.385 1.057-.729 1.628-1.017.205-.103.601-.083.807.027 1.3.742 2.473 1.65 3.424 2.728 1.118 1.265 2.031 2.667 2.678 4.192 1.164 2.763 1.59 5.614 1.4 8.549-.03.432.084.762.434 1.099 1.81 1.711 2.519 3.82 2.541 6.143.268.008.543.016.811.007.014-.008.028-.069.124zm-1.827-1.814c.038-.103.053-.13.053-.158a.815.815 0 0 0 0-.193c-.114-1.903-.844-3.56-2.374-4.906-.16-.138-.327-.364-.32-.543.115-1.828.19-3.656-.38-5.442-.32-1.004-.548-2.041-.99-2.997-.958-2.075-2.312-3.91-4.397-5.229-.624-.399-.685-.399-1.294.028-2.58 1.786-4.185 4.157-5.068 6.947-.654 2.089-.814 4.22-.639 6.377.03.371-.091.625-.388.873-.867.707-1.46 1.587-1.856 2.577a7.172 7.172 0 0 0-.518 2.597l5.73-1.024c.122.227.22.433.335.626.631 1.044 1.598 1.642 2.93 1.683 1.377.041 2.396-.522 3.104-1.58.434-.653.434-.653 1.278-.502.038.007.069.014.107.02l4.687.846zM15.802 34c-1.126-1.546-2.222-3.03-2.55-4.824-.243-1.326.617-2.604 1.941-3.058.898-.31 1.918.02 2.587.81.624.743.822 1.595.632 2.482-.373 1.718-1.415 3.147-2.61 4.59zm-.099-2.24c.107 0 .213 0 .312-.007.342-.756.715-1.498 1.027-2.268.229-.563.023-1.1-.327-1.58-.373-.523-1.05-.57-1.545-.138-.449.392-.7.9-.525 1.43.297.865.7 1.704 1.058 2.563z"/><path d="M15.772 7.647c1.955-.048 3.477 1.374 3.485 2.996.007 1.738-1.492 3.12-3.387 3.127-1.894.006-3.332-1.327-3.393-3.058-.054-1.498 1.575-3.148 3.295-3.065zm1.94 3.106c-.005-1.0-.804-1.776-1.832-1.79-1.065-.014-2.009.742-1.994 1.724.015.949.822 1.698 1.865 1.711 1.103.007 1.925-.7 1.94-1.683z"/></svg>`,
+            v2rayng: `<svg class="w-6 h-6" viewBox="0 0 32 32" fill="currentColor"><path d="M0 1.863v1.863h1.878h1.878l.05 13.637.075 13.637L18.402 15.699C26.389 7.303 32.974.323 33 .199c.05-.099-2.153-.199-4.882-.199h-4.957l-6.885 6.384-6.885 6.309-.153-6.309-.105-6.309-4.557-.074L0 0v1.863z"/></svg>`,
+            'clash-meta': `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8.009 8.009 0 0 1-8 8zm3.59-10.59L11 14l-2.59-2.59L7 12.82l4 4 6-6z"/></svg>`,
+            'clash-verge': `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4h18v2H3zm2 4h14v2H5zm-2 4h18v2H3zm2 4h14v2H5z"/></svg>`,
+            flclash: `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l7 7h-4v6h-6V9H5z"/><path d="M5 18h14v2H5z"/></svg>`,
+            flclashx: `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v2H4zm2 4h12v2H6zm-2 4h16v2H4zm2 4h12v2H6z"/></svg>`,
+            android: `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zM20.5 8C19.67 8 19 8.67 19 9.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zM15.53 2.16l1.3-1.3a.5.5 0 00-.71-.71l-1.48 1.48A6.5 6.5 0 0012 1c-.96 0-1.86.23-2.66.63L7.85.15a.5.5 0 00-.71.71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/></svg>`,
+            ios: `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.28.82-1.3.05-2.29-1.32-3.13-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91 1.16.07 2.98.3 4.15 2.02-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>`,
+            macos: `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M20 18V6c0-1.1-.9-2-2-2H6C4.9 4 4 4.9 4 6v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2z"/></svg>`,
+            windows: `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.51l8-1.14v8.34H3m9-9.72l9-1.3v11.34h-9M3 12.51h8v8.34l-8-1.14m9 1.3v-8.5h9v7.2"/></svg>`,
+            linux: `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a3 3 0 013 3v1h.5A2.5 2.5 0 0118 8.5V9a3 3 0 01-1 2.24V16a4 4 0 01-4 4h-2a4 4 0 01-4-4v-4.76A3 3 0 016 9v-.5A2.5 2.5 0 018.5 6H9V5a3 3 0 013-3z"/></svg>`
+        };
         const translations = {
-            en: { 
-                settings: 'Settings', theme: 'Theme', language: 'Language', light: 'Light', dark: 'Dark', auto: 'Auto',
-                username: 'Username', status: 'Status', expires_at: 'Expires', days_left: 'Days Left', 
-                traffic_used: 'Traffic Used', traffic_limit: 'Traffic Limit', traffic_reset: 'Traffic Reset', 
-                never_expires: 'Never expires', unlimited: 'Unlimited', 
-                ACTIVE: 'Active', DISABLED: 'Disabled', LIMITED: 'Limited', EXPIRED: 'Expired', 
-                NO_RESET: 'No reset', DAY: 'Daily', WEEK: 'Weekly', MONTH: 'Monthly',
-                copy: 'Copy', qr_code: 'QR Code', copied: 'Copied!', scan_with_phone: 'Scan with your phone',
-                ios: 'iOS', android: 'Android', pc: 'PC', tv: 'TV', featured: 'Recommended',
-                select_device: 'Select Your Device', device_description: 'Choose your device type to get the best setup experience',
-                install_app: 'Install App', app_description: 'Download and install the recommended app for your device',
-                connect_now: 'Connect Now', connect_description: 'Your account details and available servers',
-                continue: 'Continue', back: 'Back', app_installed: 'App Installed', connect: 'Connect',
-                download: 'Download', install: 'Install', or: 'or', profile: 'Profile',
-                download_install: 'Download & Install', add_subscription: 'Add Subscription', connect_use: 'Connect & Use',
-                active_servers: 'Active Servers', total_locations: 'Locations', available_locations: 'Available Locations',
-                copy_subscription_link: 'Copy Subscription Link', server_list: 'Server List'
+            en: {
+                settings: 'Settings',
+                get_link: 'Get Link',
+                theme: 'Theme',
+                language: 'Language',
+                light: 'Light',
+                dark: 'Dark',
+                auto: 'Auto',
+                qr_code: 'QR Code',
+                scan_with_phone: 'Scan with your phone',
+                select_platform: 'Select Platform',
+                subscription_link: 'Subscription Link',
+                copy: 'Copy',
+                copied: 'Copied!',
+                no_data: 'No data available',
+                username: 'Username',
+                status: 'Status',
+                expires_at: 'Expires',
+                days_left: 'Days left',
+                traffic_used: 'Traffic used',
+                traffic_reset: 'Traffic reset',
+                unlimited: 'Unlimited',
+                never_expires: 'Never expires',
+                ACTIVE: 'Active',
+                DISABLED: 'Disabled',
+                LIMITED: 'Limited',
+                EXPIRED: 'Expired',
+                NO_RESET: 'No reset',
+                DAY: 'Daily',
+                WEEK: 'Weekly',
+                MONTH: 'Monthly',
+                HOUR: 'Hourly',
+                subscription_links: 'Subscription servers',
+                get_subscription: 'Get subscription',
+                available_apps: 'Available applications',
+                other_apps: 'More applications',
+                featured: 'Recommended',
+                install_app: 'Install app',
+                add_subscription: 'Add subscription',
+                connect_use: 'Connect & use',
+                additional_step: 'Additional step',
+                step: 'Step',
+                support: 'Support',
+                ios: 'iOS',
+                android: 'Android',
+                macos: 'macOS',
+                windows: 'Windows',
+                linux: 'Linux',
+                copy_success: 'Link copied',
+                page_subtitle: 'Your VPN subscription details',
+                profile: 'Profile'
             },
-            ru: { 
-                settings: 'Настройки', theme: 'Тема', language: 'Язык', light: 'Светлая', dark: 'Темная', auto: 'Авто',
-                username: 'Имя пользователя', status: 'Статус', expires_at: 'Истекает', days_left: 'Дней осталось',
-                traffic_used: 'Трафик использован', traffic_limit: 'Лимит трафика', traffic_reset: 'Сброс трафика',
-                never_expires: 'Бессрочно', unlimited: 'Без лимита',
-                ACTIVE: 'Активен', DISABLED: 'Отключен', LIMITED: 'Ограничен', EXPIRED: 'Истек',
-                NO_RESET: 'Без сброса', DAY: 'Ежедневно', WEEK: 'Еженедельно', MONTH: 'Ежемесячно',
-                copy: 'Копировать', qr_code: 'QR-код', copied: 'Скопировано!', scan_with_phone: 'Отсканируйте телефоном',
-                ios: 'iOS', android: 'Android', pc: 'ПК', tv: 'ТВ', featured: 'Рекомендуется',
-                select_device: 'Определение устройства...', device_description: 'Выбери свой девайс и нажми - Продолжить',
-                install_app: 'Установка приложения', app_description: 'Выбери приложение, скачай его и нажми - Подключиться',
-                connect_now: 'Подключение', connect_description: 'Нажимай на кнопку ниже👇',
-                continue: 'Продолжить', back: 'Назад', app_installed: 'Подключиться', connect: 'Подключить подписку',
-                download: 'Скачать', install: 'Установить', or: 'или', profile: 'Профиль',
-                download_install: 'Скачай', add_subscription: 'Добавь подписку', connect_use: 'Включи VPN',
-                active_servers: 'Серверов в подписке', total_locations: 'Локаций в подписке', available_locations: 'Локации',
-                copy_subscription_link: 'Скопировать ссылку подписки', server_list: 'Список серверов'
+            ru: {
+                settings: 'Настройки',
+                get_link: 'Получить ссылку',
+                theme: 'Тема',
+                language: 'Язык',
+                light: 'Светлая',
+                dark: 'Тёмная',
+                auto: 'Авто',
+                qr_code: 'QR-код',
+                scan_with_phone: 'Отсканируйте телефоном',
+                select_platform: 'Выберите платформу',
+                subscription_link: 'Ссылка подписки',
+                copy: 'Копировать',
+                copied: 'Скопировано!',
+                no_data: 'Данные не найдены',
+                username: 'Пользователь',
+                status: 'Статус',
+                expires_at: 'Истекает',
+                days_left: 'Дней осталось',
+                traffic_used: 'Использовано',
+                traffic_reset: 'Сброс трафика',
+                unlimited: 'Безлимит',
+                never_expires: 'Бессрочно',
+                ACTIVE: 'Активен',
+                DISABLED: 'Отключён',
+                LIMITED: 'Ограничен',
+                EXPIRED: 'Истёк',
+                NO_RESET: 'Без сброса',
+                DAY: 'Каждый день',
+                WEEK: 'Каждую неделю',
+                MONTH: 'Каждый месяц',
+                HOUR: 'Каждый час',
+                subscription_links: 'Доступные серверы',
+                get_subscription: 'Получить подписку',
+                available_apps: 'Доступные приложения',
+                other_apps: 'Другие приложения',
+                featured: 'Рекомендуем',
+                install_app: 'Установить',
+                add_subscription: 'Добавить подписку',
+                connect_use: 'Подключиться',
+                additional_step: 'Дополнительный шаг',
+                step: 'Шаг',
+                support: 'Поддержка',
+                ios: 'iOS',
+                android: 'Android',
+                macos: 'macOS',
+                windows: 'Windows',
+                linux: 'Linux',
+                copy_success: 'Ссылка скопирована',
+                page_subtitle: 'Данные вашей VPN-подписки',
+                profile: 'Профиль'
             },
-            fa: { 
-                settings: 'تنظیمات', theme: 'تم', language: 'زبان', light: 'روشن', dark: 'تیره', auto: 'خودکار',
-                username: 'نام کاربری', status: 'وضعیت', expires_at: 'انقضا', days_left: 'روز باقی‌مانده',
-                traffic_used: 'ترافیک استفاده شده', traffic_limit: 'محدودیت ترافیک', traffic_reset: 'بازنشانی ترافیک',
-                never_expires: 'هرگز منقضی نمی‌شود', unlimited: 'نامحدود',
-                ACTIVE: 'فعال', DISABLED: 'غیرفعال', LIMITED: 'محدود', EXPIRED: 'منقضی شده',
-                NO_RESET: 'بدون بازنشانی', DAY: 'روزانه', WEEK: 'هفتگی', MONTH: 'ماهانه',
-                copy: 'کپی', qr_code: 'کد QR', copied: 'کپی شد!', scan_with_phone: 'با تلفن اسکن کنید',
-                ios: 'iOS', android: 'اندروید', pc: 'کامپیوتر', tv: 'تلویزیون', featured: 'پیشنهادی',
-                select_device: 'دستگاه خود را انتخاب کنید', device_description: 'نوع دستگاه خود را برای بهترین تجربه انتخاب کنید',
-                install_app: 'نصب اپلیکیشن', app_description: 'اپلیکیشن پیشنهادی را دانلود و نصب کنید',
-                connect_now: 'اتصال', connect_description: 'جزئیات حساب شما و سرورهای موجود',
-                continue: 'ادامه', back: 'بازگشت', app_installed: 'اپلیکیشن نصب شد', connect: 'اتصال',
-                download: 'دانلود', install: 'نصب', or: 'یا', profile: 'پروفایل',
-                download_install: 'دانلود و نصب', add_subscription: 'افزودن اشتراک', connect_use: 'اتصال و استفاده',
-                active_servers: 'سرورهای فعال', total_locations: 'مکان‌ها', available_locations: 'مکان‌های موجود',
-                copy_subscription_link: 'کپی لینک اشتراک', server_list: 'فهرست سرورها'
+            fa: {
+                settings: 'تنظیمات',
+                get_link: 'دریافت لینک',
+                theme: 'پوسته',
+                language: 'زبان',
+                light: 'روشن',
+                dark: 'تیره',
+                auto: 'خودکار',
+                qr_code: 'کد QR',
+                scan_with_phone: 'با تلفن خود اسکن کنید',
+                select_platform: 'انتخاب پلتفرم',
+                subscription_link: 'لینک اشتراک',
+                copy: 'کپی',
+                copied: 'کپی شد!',
+                no_data: 'اطلاعاتی یافت نشد',
+                username: 'نام کاربری',
+                status: 'وضعیت',
+                expires_at: 'تاریخ انقضا',
+                days_left: 'روز باقی‌مانده',
+                traffic_used: 'ترافیک مصرف شده',
+                traffic_reset: 'بازه بازنشانی',
+                unlimited: 'نامحدود',
+                never_expires: 'بدون انقضا',
+                ACTIVE: 'فعال',
+                DISABLED: 'غیرفعال',
+                LIMITED: 'محدود',
+                EXPIRED: 'منقضی شده',
+                NO_RESET: 'بدون بازنشانی',
+                DAY: 'روزانه',
+                WEEK: 'هفتگی',
+                MONTH: 'ماهانه',
+                HOUR: 'ساعتی',
+                subscription_links: 'سرورهای اشتراک',
+                get_subscription: 'دریافت اشتراک',
+                available_apps: 'برنامه‌های موجود',
+                other_apps: 'برنامه‌های دیگر',
+                featured: 'پیشنهادی',
+                install_app: 'نصب برنامه',
+                add_subscription: 'افزودن اشتراک',
+                connect_use: 'اتصال و استفاده',
+                additional_step: 'مرحله اضافی',
+                step: 'مرحله',
+                support: 'پشتیبانی',
+                ios: 'iOS',
+                android: 'اندروید',
+                macos: 'macOS',
+                windows: 'ویندوز',
+                linux: 'لینوکس',
+                copy_success: 'لینک کپی شد',
+                page_subtitle: 'جزئیات اشتراک VPN شما',
+                profile: 'پروفایل'
             }
         };
 
-        // Initialize app
         document.addEventListener('DOMContentLoaded', initializeApp);
-
         function initializeApp() {
             loadSettings();
             loadAppsConfig();
             loadPanelData();
-            renderDevices();
-            renderStatsBlock();
-            setupResponsiveLayout();
         }
 
-        // Setup responsive layout
-        function setupResponsiveLayout() {
-            function updateLayout() {
-                const isMobile = window.innerWidth <= 768;
-                const statsBlockMobile = document.getElementById('statsBlockMobile');
-                const profileSidebar = document.getElementById('profileSidebar');
-                
-                if (isMobile) {
-                    statsBlockMobile.style.display = 'block';
-                    if (profileSidebar) profileSidebar.style.display = 'none';
-                } else {
-                    statsBlockMobile.style.display = 'none';
-                    if (profileSidebar) profileSidebar.style.display = 'block';
-                }
-                
-                // Sync stats between desktop and mobile versions
-                syncStatsContent();
-            }
-            
-            updateLayout();
-            window.addEventListener('resize', updateLayout);
-        }
-
-        function syncStatsContent() {
-            const activeServers = document.getElementById('activeServers').textContent;
-            const totalLocations = document.getElementById('totalLocations').textContent;
-            const locationsTags = document.getElementById('locationsTags').innerHTML;
-            
-            const activeServersMobile = document.getElementById('activeServersMobile');
-            const totalLocationsMobile = document.getElementById('totalLocationsMobile');
-            const locationsTagsMobile = document.getElementById('locationsTagsMobile');
-            
-            if (activeServersMobile) activeServersMobile.textContent = activeServers;
-            if (totalLocationsMobile) totalLocationsMobile.textContent = totalLocations;
-            if (locationsTagsMobile) locationsTagsMobile.innerHTML = locationsTags;
-        }
-
-        // Settings functions
         function loadSettings() {
             const savedTheme = localStorage.getItem('theme') || 'auto';
             applyTheme(savedTheme);
@@ -1914,10 +694,8 @@ body::before {
         }
 
         function getBrowserLanguage() {
-            const lang = navigator.language || navigator.userLanguage;
-            if (lang.startsWith('ru')) return 'ru';
-            if (lang.startsWith('fa')) return 'fa';
-            return 'en';
+            const lang = (navigator.language || navigator.userLanguage || 'en').slice(0, 2);
+            return translations[lang] ? lang : 'en';
         }
 
         function setTheme(theme) {
@@ -1927,774 +705,604 @@ body::before {
 
         function applyTheme(theme) {
             const html = document.documentElement;
-            const themeColorMeta = document.getElementById('themeColor');
-            let isDark;
+            const meta = document.getElementById('themeColor');
+            let isDark = false;
             if (theme === 'auto') {
                 isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             } else {
                 isDark = theme === 'dark';
             }
             html.classList.toggle('dark-theme', isDark);
-            themeColorMeta.setAttribute('content', isDark ? '#0f172a' : '#3b82f6');
+            meta.setAttribute('content', isDark ? '#0f172a' : '#3b82f6');
         }
 
         function setLanguage(lang) {
-            currentLanguage = lang;
-            localStorage.setItem('lang', lang);
+            currentLanguage = translations[lang] ? lang : 'en';
+            localStorage.setItem('lang', currentLanguage);
             updateTexts();
+            if (panelData?.response?.isFound) {
+                renderContent();
+            }
+        }
+
+        function setupLanguageButtons() {
+            const container = document.getElementById('languageButtons');
+            container.innerHTML = '';
+            const baseLangs = ['en'];
+            const additionalLangs = appsConfig?.config?.additionalLocales || [];
+            const allLangs = [...new Set([...baseLangs, ...additionalLangs])];
+            allLangs.forEach(code => {
+                if (!langFullNames[code]) return;
+                const button = document.createElement('button');
+                button.className = 'btn';
+                button.textContent = langFullNames[code];
+                button.onclick = () => setLanguage(code);
+                container.appendChild(button);
+            });
         }
 
         function updateTexts() {
             document.querySelectorAll('[data-key]').forEach(el => {
                 const key = el.getAttribute('data-key');
-                el.textContent = t(key);
+                const text = t(key);
+                if (text) {
+                    el.textContent = text;
+                }
             });
         }
 
-        function t(key) { 
-            return translations[currentLanguage]?.[key] || translations.en[key] || key; 
+        function t(key) {
+            return translations[currentLanguage]?.[key] || translations.en[key] || key;
         }
 
-        // Device detection
         function detectOS() {
-            const userAgent = navigator.userAgent;
-            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) return 'ios';
-            if (/Android/.test(userAgent)) return 'android';
-            return 'pc';
+            const ua = navigator.userAgent;
+            const platform = navigator.platform;
+            if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return 'ios';
+            if (/Android/.test(ua)) return 'android';
+            if (/Mac/.test(platform)) return 'macos';
+            if (/Win/.test(platform)) return 'windows';
+            if (/Linux/.test(platform)) return 'linux';
+            return 'windows';
         }
 
-        // Data loading functions
+        function fetchAppConfig() {
+            return fetch('/assets/app-config.json').catch(() => fetch('/app-config.json'));
+        }
+
         function loadAppsConfig() {
-            fetch('/assets/app-config.json')
+            fetchAppConfig()
                 .then(response => {
-                    if (!response.ok) {
-                        return Promise.reject(`Failed to load with status: ${response.status}`);
+                    if (!response || !response.ok) {
+                        return Promise.reject(new Error(`Failed to load app config: ${response?.status}`));
                     }
                     return response.json();
                 })
                 .then(data => {
                     appsConfig = data;
-                    if (currentStep === 2) renderApps();
-                    if (currentStep === 3) renderAppSetupSteps();
+                    branding = data.config?.branding || null;
+                    if (data.platforms) {
+                        validPlatforms = Object.keys(data.platforms).filter(p => Array.isArray(data.platforms[p]) && data.platforms[p].length);
+                    } else {
+                        validPlatforms = Object.keys(data).filter(p => Array.isArray(data[p]) && data[p].length);
+                        appsConfig = { platforms: data };
+                    }
+                    setupLanguageButtons();
+                    updateBranding();
                 })
-                .catch(error => {
-                    console.error('Error loading apps config:', error);
+                .catch(error => console.error('Error loading apps config:', error))
+                .finally(() => {
+                    if (panelData) {
+                        renderContent();
+                    }
                 });
+        }
+        function updateBranding() {
+            if (!branding) return;
+            const logo = document.querySelector('.logo');
+            if (branding.logoUrl && logo && !logo.querySelector('.brand-logo')) {
+                const img = document.createElement('img');
+                img.src = branding.logoUrl;
+                img.alt = branding.name || 'Logo';
+                img.className = 'brand-logo';
+                img.style.cssText = 'height:32px;width:auto;border-radius:6px;';
+                logo.insertBefore(img, logo.firstChild);
+            }
+            if (branding.supportUrl) {
+                const controls = document.querySelector('.controls');
+                if (controls && !controls.querySelector('.support-btn')) {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-icon support-btn';
+                    btn.onclick = () => openLink(branding.supportUrl);
+                    const isTelegram = branding.supportUrl.startsWith('https://t.me');
+                    btn.innerHTML = isTelegram
+                        ? `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>`
+                        : `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
+                    btn.insertAdjacentHTML('beforeend', `<span class="btn-text" data-key="support">${t('support')}</span>`);
+                    const settingsBtn = controls.querySelector('button');
+                    controls.insertBefore(btn, settingsBtn);
+                }
+            }
+            updateTexts();
         }
 
         function loadPanelData() {
-            const panelDataB64 = '<%= panelData %>';
+            const encoded = '<%= panelData %>';
+            if (!encoded) {
+                panelData = { response: { isFound: false } };
+                renderContent();
+                return;
+            }
             try {
-                panelData = JSON.parse(atob(panelDataB64));
-                console.log('Panel data loaded:', panelData);
-                console.log('Full panelData.response structure:', JSON.stringify(panelData.response, null, 2));
-                console.log('Links found:', panelData?.response?.links?.length || 0);
-                console.log('All keys in response:', Object.keys(panelData?.response || {}));
-                
-                // Проверим все возможные места где могут быть ссылки
-                if (panelData?.response?.ssConfLinks) {
-                    console.log('ssConfLinks found:', panelData.response.ssConfLinks);
-                }
-                
-                // Убедимся что данные корректны перед рендерингом
-                if (panelData?.response?.isFound) {
-                    console.log('Valid panel data found, rendering...');
-                    renderProfileInfo();
-                    renderStatsBlock();
-                } else {
-                    console.error('Invalid panel data structure:', panelData);
-                }
+                panelData = JSON.parse(atob(encoded));
             } catch (error) {
-                console.error('Error loading panel data:', error);
+                console.error('Error decoding panel data:', error);
+                panelData = { response: { isFound: false } };
+            }
+            if (appsConfig !== null) {
+                renderContent();
             }
         }
 
-        // Statistics Block Rendering
-        function renderStatsBlock() {
-            console.log('renderStatsBlock called');
-            console.log('panelData:', panelData);
-            console.log('panelData.response:', panelData?.response);
-            
-            if (!panelData?.response) {
-                console.log('No panel data available');
-                setDefaultStats();
+        function renderContent() {
+            const main = document.getElementById('mainContent');
+            if (!panelData?.response?.isFound) {
+                main.innerHTML = `<div class="card"><div data-key="no_data">${t('no_data')}</div></div>`;
+                updateTexts();
                 return;
             }
+            const userInfo = renderUserInfo();
+            const appsSection = renderAppsSection();
+            const linksSection = renderLinksSection();
+            main.innerHTML = `${userInfo}${appsSection}${linksSection}`;
+            updateTexts();
+            updateBranding();
+            attachEventListeners();
+        }
+        function renderUserInfo() {
+            const user = panelData.response.user;
+            if (!user) return '';
+            const expiresDate = user.expiresAt ? new Date(user.expiresAt) : null;
+            const isNeverExpires = expiresDate && expiresDate.getFullYear() >= 2099;
+            const isActive = (user.userStatus || '').toLowerCase() === 'active';
+            const trafficLimit = user.trafficLimit === '0' ? t('unlimited') : escapeHtml(user.trafficLimit || '—');
+            return `
+                <section class="card user-info">
+                    <div class="card-header">
+                        <h2 class="card-title" data-key="profile">${t('profile')}</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-row">
+                            <span class="info-label" data-key="username">${t('username')}</span>
+                            <span class="info-value">${escapeHtml(user.username || '—')}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label" data-key="status">${t('status')}</span>
+                            <span class="badge badge-${(user.userStatus || '').toLowerCase()}">${t(user.userStatus)}</span>
+                        </div>
+                        ${isActive ? `
+                            <div class="info-row">
+                                <span class="info-label" data-key="expires_at">${t('expires_at')}</span>
+                                <span class="info-value">${isNeverExpires ? t('never_expires') : formatDate(expiresDate)}</span>
+                            </div>
+                            ${!isNeverExpires && user.daysLeft ? `<div class="info-row"><span class="info-label" data-key="days_left">${t('days_left')}</span><span class="info-value">${escapeHtml(String(user.daysLeft))}</span></div>` : ''}
+                            <div class="info-row">
+                                <span class="info-label" data-key="traffic_used">${t('traffic_used')}</span>
+                                <span class="info-value">${escapeHtml(user.trafficUsed || '0')} / ${trafficLimit}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label" data-key="traffic_reset">${t('traffic_reset')}</span>
+                                <span class="info-value">${t(user.trafficLimitStrategy)}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </section>
+            `;
+        }
 
-            // Попытаемся найти ссылки в разных местах
-            let links = [];
-            
-            // Сначала проверим обычное место
-            if (panelData.response.links && Array.isArray(panelData.response.links)) {
-                links = panelData.response.links;
-                console.log('Found links in response.links:', links.length);
-            }
-            
-            // Если пусто, проверим ssConfLinks
-            if (links.length === 0 && panelData.response.ssConfLinks) {
-                console.log('Checking ssConfLinks:', panelData.response.ssConfLinks);
-                
-                // ssConfLinks может быть объектом с разными ключами
-                Object.keys(panelData.response.ssConfLinks).forEach(key => {
-                    const confData = panelData.response.ssConfLinks[key];
-                    console.log(`Checking ssConfLinks.${key}:`, confData);
-                    
-                    if (confData && Array.isArray(confData)) {
-                        links = links.concat(confData);
-                    } else if (confData && confData.links && Array.isArray(confData.links)) {
-                        links = links.concat(confData.links);
+        function renderLinksSection() {
+            const links = collectSubscriptionLinks();
+            if (!links.length) return '';
+            return `
+                <section class="card links-section">
+                    <div class="card-header">
+                        <h2 class="card-title" data-key="subscription_links">${t('subscription_links')}</h2>
+                    </div>
+                    <div class="card-content">
+                        ${links.map(link => `
+                            <div class="link-item">
+                                <div class="link-info">
+                                    <div class="link-name">${escapeHtml(extractLinkName(link))}</div>
+                                </div>
+                                <div class="link-actions">
+                                    <button class="btn btn-sm copy-btn" data-copy-text="${escapeAttribute(link)}">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                        <span data-key="copy">${t('copy')}</span>
+                                    </button>
+                                    <button class="btn btn-sm qr-btn" data-qr-text="${escapeAttribute(link)}" data-qr-title="${escapeAttribute(extractLinkName(link))}">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5h4v4H5V5zm10 0h4v4h-4V5zM5 15h4v4H5v-4zm10-4h4v4h-4v-4z"/></svg>
+                                        <span data-key="qr_code">${t('qr_code')}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </section>
+            `;
+        }
+
+        function collectSubscriptionLinks() {
+            const response = panelData?.response;
+            if (!response) return [];
+            const seen = new Set();
+            const addLinks = list => {
+                if (!list) return;
+                list.forEach(link => {
+                    if (typeof link === 'string' && link.trim() && !seen.has(link)) {
+                        seen.add(link);
                     }
                 });
-                
-                console.log('Found links in ssConfLinks:', links.length);
+            };
+            if (Array.isArray(response.links)) {
+                addLinks(response.links);
             }
-            
-            // Если все еще пусто, попробуем создать фиктивные ссылки из metrics
-            if (links.length === 0) {
-                console.log('No links found in panelData, creating from subscription URL');
-                
-                // Создадим ссылки на основе метрик или subscription URL
-                if (panelData.response.subscriptionUrl) {
-                    // Создадим 3 фиктивные ссылки для примера (по количеству серверов в метриках)
-                    links = [
-                        panelData.response.subscriptionUrl + '#🇳🇱 Amsterdam (Reserve)',
-                        panelData.response.subscriptionUrl + '#🇵🇱 Poland', 
-                        panelData.response.subscriptionUrl + '#🇳🇱 NL YouTube Adblock🚷'
-                    ];
-                    console.log('Created mock links from metrics:', links);
-                }
-            }
-
-            if (links.length === 0) {
-                console.log('No links found anywhere, using default stats');
-                setDefaultStats();
-                return;
-            }
-
-            const totalServers = links.length;
-            console.log('Total servers found:', totalServers);
-            
-            // Count active servers - initially assume all are active
-            let activeServers = totalServers;
-            
-            const locations = new Set();
-            links.forEach((link, index) => {
-                console.log(`Processing link ${index}:`, link);
-                const name = extractLinkName(link);
-                console.log(`Extracted name: "${name}"`);
-                
-                const flagMatch = name.match(/^[\u{1F1E6}-\u{1F1FF}]{2}/u);
-                if (flagMatch) {
-                    console.log(`Found flag: ${flagMatch[0]}`);
-                    locations.add(flagMatch[0]);
-                } else {
-                    const locationMatch = name.match(/^([A-Z]{2,3}|[A-Za-z\s]+)/);
-                    if (locationMatch) {
-                        console.log(`Found location: ${locationMatch[1]}`);
-                        locations.add(locationMatch[1].trim());
+            if (response.ssConfLinks) {
+                Object.values(response.ssConfLinks).forEach(entry => {
+                    if (Array.isArray(entry)) {
+                        addLinks(entry);
+                    } else if (entry && Array.isArray(entry.links)) {
+                        addLinks(entry.links);
                     }
-                }
-            });
-
-            console.log('All locations found:', Array.from(locations));
-
-            // Update desktop stats
-            document.getElementById('activeServers').textContent = activeServers;
-            document.getElementById('totalLocations').textContent = locations.size;
-
-            const locationsTags = document.getElementById('locationsTags');
-            if (locationsTags) {
-                const locationArray = Array.from(locations).slice(0, 8);
-                console.log('Locations to display:', locationArray);
-                locationsTags.innerHTML = locationArray.map(location => 
-                    `<div class="location-tag">${location}</div>`
-                ).join('');
+                });
             }
-            
-            // Update mobile stats
-            const activeServersMobile = document.getElementById('activeServersMobile');
-            const totalLocationsMobile = document.getElementById('totalLocationsMobile');
-            const locationsTagsMobile = document.getElementById('locationsTagsMobile');
-            
-            if (activeServersMobile) activeServersMobile.textContent = activeServers;
-            if (totalLocationsMobile) totalLocationsMobile.textContent = locations.size;
-            if (locationsTagsMobile) {
-                const locationArray = Array.from(locations).slice(0, 8);
-                locationsTagsMobile.innerHTML = locationArray.map(location => 
-                    `<div class="location-tag">${location}</div>`
-                ).join('');
+            if (Array.isArray(response.subscriptionLinks)) {
+                addLinks(response.subscriptionLinks);
             }
-            
-            // Store links for use in server list
-            panelData.response.processedLinks = links;
-            
-            console.log(`Stats updated: ${activeServers} servers, ${locations.size} locations`);
-        }
-
-        function setDefaultStats() {
-            console.log('Setting default values: 0 servers, 0 locations');
-            
-            // Set default values when no data
-            document.getElementById('activeServers').textContent = '0';
-            document.getElementById('totalLocations').textContent = '0';
-            
-            const activeServersMobile = document.getElementById('activeServersMobile');
-            const totalLocationsMobile = document.getElementById('totalLocationsMobile');
-            
-            if (activeServersMobile) activeServersMobile.textContent = '0';
-            if (totalLocationsMobile) totalLocationsMobile.textContent = '0';
-        }
-
-        // Step navigation
-        function nextStep() {
-            if (currentStep < 3) {
-                document.getElementById(`step${currentStep}`).classList.remove('active');
-                currentStep++;
-                document.getElementById(`step${currentStep}`).classList.add('active');
-                updateProgress();
-                
-                if (currentStep === 2) renderApps();
-                if (currentStep === 3) {
-                    renderAppSetupSteps();
-                    updateStep3Buttons();
-                }
+            if (response.subscriptionUrl) {
+                addLinks([response.subscriptionUrl]);
             }
+            return Array.from(seen);
         }
-
-        function prevStep() {
-            if (currentStep > 1) {
-                document.getElementById(`step${currentStep}`).classList.remove('active');
-                currentStep--;
-                document.getElementById(`step${currentStep}`).classList.add('active');
-                updateProgress();
+        function renderAppsSection() {
+            const platforms = appsConfig?.platforms;
+            if (!platforms || validPlatforms.length === 0) return '';
+            const stored = localStorage.getItem('platform');
+            currentPlatform = validPlatforms.includes(stored) ? stored : detectOS();
+            if (!validPlatforms.includes(currentPlatform)) {
+                currentPlatform = validPlatforms[0];
             }
+            return `
+                <section class="card apps-section">
+                    <div class="card-header">
+                        <h2 class="card-title" data-key="available_apps">${t('available_apps')}</h2>
+                        <button class="btn" id="platform-selector-btn" onclick="openPlatformModal()">
+                            ${getAppIcon({ id: currentPlatform }, currentPlatform)} <span>${t(currentPlatform)}</span>
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div class="platform-tabs">
+                            ${validPlatforms.map(p => `<div class="platform-tab ${p === currentPlatform ? 'active' : ''}" data-platform="${p}">${getAppIcon({ id: p }, p)} ${t(p)}</div>`).join('')}
+                        </div>
+                        <div id="appsGrid">${renderAppsForPlatform()}</div>
+                    </div>
+                </section>
+            `;
         }
 
-        function updateProgress() {
-            const progress = (currentStep / 3) * 100;
-            document.getElementById('progressFill').style.width = `${progress}%`;
-        }
-
-        // Update step 3 buttons based on device/app selection
-        function updateStep3Buttons() {
-            const connectBtn = document.getElementById('connectBtn');
-            
-            // Only hide the connect button for specific TV + VPN4TV combination
-            if (selectedDevice === 'tv' && selectedApp && 
-                selectedApp.name && selectedApp.name.toLowerCase().includes('vpn4tv')) {
-                connectBtn.style.display = 'none';
-            } else {
-                connectBtn.style.display = 'inline-flex';
-            }
-        }
-
-        // Device rendering and selection
-        function renderDevices() {
-            const devices = [
-                { id: 'android', name: t('android'), icon: appIcons['android'] || '' },
-                { id: 'ios', name: t('ios'), icon: appIcons['ios'] || '' },
-                { id: 'pc', name: t('pc'), icon: appIcons['pc'] || '' },
-                { id: 'tv', name: t('tv'), icon: appIcons['tv'] || '' }
-            ];
-
-            const deviceGrid = document.getElementById('deviceGrid');
-            deviceGrid.innerHTML = devices.map(device => `
-                <div class="device-card" data-device="${device.id}" onclick="selectDevice('${device.id}')">
-                    <div class="device-icon">${device.icon}</div>
-                    <div class="device-name">${device.name}</div>
-                </div>
-            `).join('');
-
-            const detectedOS = detectOS();
-            selectDevice(detectedOS);
-        }
-
-        function selectDevice(deviceId) {
-            selectedDevice = deviceId;
-            currentPlatform = deviceId;
-            localStorage.setItem('platform', deviceId);
-
-            document.querySelectorAll('.device-card').forEach(card => {
-                card.classList.toggle('selected', card.dataset.device === deviceId);
-            });
-
-            document.getElementById('deviceNextBtn').disabled = false;
-        }
-
-        // Apps rendering
-        function renderApps() {
-            if (!appsConfig || !appsConfig[currentPlatform]) {
-                document.getElementById('appsGrid').innerHTML = '<p>Loading apps...</p>';
-                return;
-            }
-
-            const apps = appsConfig[currentPlatform] || [];
+        function renderAppsForPlatform() {
+            const apps = appsConfig.platforms[currentPlatform] || [];
             const featuredApps = apps.filter(app => app.isFeatured);
             const otherApps = apps.filter(app => !app.isFeatured);
-
-            let html = '';
-            
-            if (featuredApps.length > 0) {
-                html += featuredApps.map(renderAppCard).join('');
+            let html = '<div class="apps-container">';
+            if (featuredApps.length) {
+                html += `<div class="featured-apps-row">${featuredApps.map(renderAppCard).join('')}</div>`;
             }
-            
-            if (otherApps.length > 0) {
-                html += otherApps.map(renderAppCard).join('');
+            if (otherApps.length) {
+                html += `
+                    <div class="other-apps-spoiler">
+                        <div class="spoiler-header">
+                            <span data-key="other_apps">${t('other_apps')}</span>
+                            <svg class="w-4 h-4 spoiler-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                        <div class="spoiler-content">
+                            <div class="apps-grid">${otherApps.map(renderAppCard).join('')}</div>
+                        </div>
+                    </div>
+                `;
             }
-
-            document.getElementById('appsGrid').innerHTML = html;
-
-            // Reset selection state
-            selectedApp = null;
-            document.getElementById('appNextBtn').disabled = true;
+            html += '</div>';
+            return html;
         }
 
         function renderAppCard(app) {
-            const downloadButtons = (app.installationStep?.buttons || []).map(button => {
-                const label = button.buttonText?.ru || button.buttonText?.en || 'Download';
-                return `
-                    <button class="btn btn-primary download-btn" onclick="window.open('${button.buttonLink}', '_blank'); event.stopPropagation();">
-                        ${escapeHtml(label)}
-                    </button>
-                `;
-            }).join('');
-
             return `
-                <div class="app-card ${app.isFeatured ? 'featured' : ''}" data-app="${app.id}" onclick="selectApp('${app.id}', '${app.name}')">
-                    ${app.isFeatured ? '<div class="featured-badge">' + t('featured') + '</div>' : ''}
+                <div class="app-card ${app.isFeatured ? 'featured' : ''}" data-app-id="${escapeAttribute(app.id)}">
+                    ${app.isFeatured ? `<div class="featured-badge" data-key="featured">${t('featured')}</div>` : ''}
                     <div class="app-header">
                         <div class="app-icon">${getAppIcon(app, currentPlatform)}</div>
                         <div class="app-name">${escapeHtml(app.name)}</div>
                     </div>
-                    <div class="app-download-btn">
-                        ${downloadButtons || `<button class="btn btn-primary" disabled>${t('install')}</button>`}
-                    </div>
+                    <div class="btn btn-primary" style="width:100%;justify-content:center;" data-key="install_app">${t('install_app')}</div>
                 </div>
             `;
-        }
-
-        function selectApp(appId, appName) {
-            selectedApp = { id: appId, name: appName };
-
-            document.querySelectorAll('.app-card').forEach(card => {
-                card.classList.toggle('selected', card.dataset.app === appId);
-            });
-
-            document.getElementById('appNextBtn').disabled = false;
         }
 
         function getAppIcon(app, platform) {
             const appId = app.id?.toLowerCase();
             if (appIcons[appId]) return appIcons[appId];
-            return appIcons[platform] || '';
+            if (appId?.includes('flclashx')) return appIcons['flclashx'];
+            if (appId?.includes('flclash')) return appIcons['flclash'];
+            if (appId?.includes('clash-verge')) return appIcons['clash-verge'];
+            if (appId?.includes('clash')) return appIcons['clash-meta'];
+            if (appId?.includes('v2ray')) return appIcons['v2rayng'];
+            return appIcons[platform] || appIcons['windows'];
+        }
+        function renderAppSteps(app) {
+            const response = panelData?.response;
+            if (!response) return '<div class="step"><div class="step-description">No data available</div></div>';
+            const stepData = {
+                subscriptionUrl: response.subscriptionUrl,
+                cryptoLink: response.happ?.cryptoLink || response.cryptoLink
+            };
+            let stepsHtml = '';
+            let stepCounter = 1;
+            if (app.installationStep) {
+                stepsHtml += renderStep(app.installationStep, 'installationStep', app, stepData, stepCounter++);
+            }
+            if (app.additionalBeforeAddSubscriptionStep) {
+                stepsHtml += renderStep(app.additionalBeforeAddSubscriptionStep, 'additionalBeforeAddSubscriptionStep', app, stepData, stepCounter++);
+            }
+            if (app.addSubscriptionStep) {
+                stepsHtml += renderStep(app.addSubscriptionStep, 'addSubscriptionStep', app, stepData, stepCounter++);
+            }
+            if (app.additionalAfterAddSubscriptionStep) {
+                stepsHtml += renderStep(app.additionalAfterAddSubscriptionStep, 'additionalAfterAddSubscriptionStep', app, stepData, stepCounter++);
+            }
+            if (app.connectAndUseStep) {
+                stepsHtml += renderStep(app.connectAndUseStep, 'connectAndUseStep', app, stepData, stepCounter++);
+            }
+            return stepsHtml || '<div class="step"><div class="step-description">No setup steps available</div></div>';
         }
 
-        // App Setup Steps rendering
-        function renderAppSetupSteps() {
-            if (!appsConfig || !selectedApp) return;
+        function getStepNumber(stepKey, stepNumber) {
+            return stepNumber ? stepNumber.toString() : '1';
+        }
 
-            const app = appsConfig[currentPlatform]?.find(a => a.id === selectedApp.id);
-            if (!app) return;
+        function getStepTitle(stepKey, stepConfig) {
+            if (stepKey === 'additionalBeforeAddSubscriptionStep' || stepKey === 'additionalAfterAddSubscriptionStep') {
+                if (stepConfig?.title) {
+                    if (typeof stepConfig.title === 'object') {
+                        return stepConfig.title[currentLanguage] || stepConfig.title.en || t('additional_step');
+                    }
+                    return stepConfig.title;
+                }
+                return t('additional_step');
+            }
+            const titles = {
+                installationStep: t('install_app'),
+                addSubscriptionStep: t('add_subscription'),
+                connectAndUseStep: t('connect_use')
+            };
+            return titles[stepKey] || t('step');
+        }
 
-            const stepsContainer = document.getElementById('appSetupSteps');
-            if (!stepsContainer) return;
-
-            let html = '';
-            let stepNumber = 1;
-
-            if (app.installationStep && (app.installationStep.description || app.installationStep.buttons)) {
-                html += `
-                    <div class="setup-step">
-                        <h4>
-                            <span class="setup-step-number">${stepNumber}</span>
-                            ${t('download_install')}
-                        </h4>
-                        ${app.installationStep.description ? `<p>${getLocalizedText(app.installationStep.description)}</p>` : ''}
-                        ${app.installationStep.buttons ? `
-                            <div class="setup-step-buttons">
-                                ${app.installationStep.buttons.map(button => `
-                                    <button class="btn btn-sm btn-secondary" onclick="window.open('${button.buttonLink}', '_blank')">
-                                        ${getLocalizedText(button.buttonText)}
-                                    </button>
-                                `).join('')}
-                            </div>
-                        ` : ''}
+        function renderStep(stepConfig, stepKey, app, data, stepNumber) {
+            if (!stepConfig) return '';
+            const stepNum = getStepNumber(stepKey, stepNumber);
+            const stepTitle = getStepTitle(stepKey, stepConfig);
+            let buttonsHtml = '';
+            if (stepConfig.buttons) {
+                buttonsHtml = stepConfig.buttons.map(button => {
+                    const buttonText = typeof button.buttonText === 'object'
+                        ? (button.buttonText[currentLanguage] || button.buttonText.en || 'Open')
+                        : button.buttonText || 'Open';
+                    return `<button class="btn btn-primary" onclick="openLink('${escapeAttribute(button.buttonLink)}')">${escapeHtml(buttonText)}</button>`;
+                }).join('');
+            }
+            if (stepKey === 'addSubscriptionStep') {
+                const finalUrl = buildSubscriptionUrl(app, data);
+                if (finalUrl) {
+                    buttonsHtml += `<button class="btn btn-primary" onclick="openSubscriptionUrl('${escapeAttribute(finalUrl)}')">${t('add_subscription')}</button>`;
+                }
+            }
+            const description = getLocalizedText(stepConfig.description);
+            return `
+                <div class="step">
+                    <div class="step-title">
+                        <span class="step-number">${stepNum}</span>
+                        ${stepTitle}
                     </div>
-                `;
-                stepNumber++;
-            }
-
-            if (app.addSubscriptionStep && app.addSubscriptionStep.description) {
-                html += `
-                    <div class="setup-step">
-                        <h4>
-                            <span class="setup-step-number">${stepNumber}</span>
-                            ${t('add_subscription')}
-                        </h4>
-                        <p>${getLocalizedText(app.addSubscriptionStep.description)}</p>
-                    </div>
-                `;
-                stepNumber++;
-            }
-
-            if (app.additionalAfterAddSubscriptionStep && (app.additionalAfterAddSubscriptionStep.description || app.additionalAfterAddSubscriptionStep.title)) {
-                html += `
-                    <div class="setup-step">
-                        <h4>
-                            <span class="setup-step-number">${stepNumber}</span>
-                            ${app.additionalAfterAddSubscriptionStep.title ? getLocalizedText(app.additionalAfterAddSubscriptionStep.title) : 'Manual Setup'}
-                        </h4>
-                        ${app.additionalAfterAddSubscriptionStep.description ? `<p>${getLocalizedText(app.additionalAfterAddSubscriptionStep.description)}</p>` : ''}
-                        ${app.additionalAfterAddSubscriptionStep.buttons && app.additionalAfterAddSubscriptionStep.buttons.length > 0 ? `
-                            <div class="setup-step-buttons">
-                                ${app.additionalAfterAddSubscriptionStep.buttons.map(button => `
-                                    <button class="btn btn-sm btn-secondary" onclick="window.open('${button.buttonLink}', '_blank')">
-                                        ${getLocalizedText(button.buttonText)}
-                                    </button>
-                                `).join('')}
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-                stepNumber++;
-            }
-
-            if (app.connectAndUseStep && app.connectAndUseStep.description) {
-                html += `
-                    <div class="setup-step">
-                        <h4>
-                            <span class="setup-step-number">${stepNumber}</span>
-                            ${t('connect_use')}
-                        </h4>
-                        <p>${getLocalizedText(app.connectAndUseStep.description)}</p>
-                    </div>
-                `;
-            }
-
-            if (html) {
-                stepsContainer.innerHTML = html;
-                stepsContainer.style.display = 'block';
-            } else {
-                stepsContainer.style.display = 'none';
-            }
+                    <div class="step-description">${escapeHtml(description)}</div>
+                    <div class="step-buttons">${buttonsHtml}</div>
+                </div>
+            `;
         }
 
         function getLocalizedText(textObj) {
+            if (!textObj) return '';
             if (typeof textObj === 'string') return textObj;
-            return textObj[currentLanguage] || textObj['en'] || '';
+            return textObj[currentLanguage] || textObj.en || '';
         }
-
-        // Servers rendering (now only for modal)
-        function renderServersInModal() {
-            console.log('Rendering servers in modal...');
-            if (!panelData?.response?.isFound) {
-                document.getElementById('serversList').innerHTML = '<p>No servers available</p>';
-                return;
+        function buildSubscriptionUrl(app, data) {
+            if (!app) return '';
+            const isInTelegram = !!window.Telegram?.WebApp?.initData;
+            const REDIRECT_BASE = 'https://legiz-ru.github.io/Orion/redirect-page/?redirect_to=';
+            if (app.id === 'happ') {
+                const happLink = data.cryptoLink;
+                if (!happLink) return '';
+                if (isInTelegram) {
+                    const prefix = app.redirectLink && app.redirectLink.trim() ? app.redirectLink : REDIRECT_BASE;
+                    return prefix + encodeURIComponent(happLink);
+                }
+                return happLink;
             }
-
-            renderServersList();
-            // Start status checking after servers are rendered
-            setTimeout(() => {
-                console.log('Starting VPN status update...');
-                updateVpnStatus();
-            }, 500);
-        }
-
-        function renderProfileInfo() {
-            if (!panelData?.response?.isFound) {
-                const profileInfo = document.getElementById('profileInfo');
-                const profileSidebarContent = document.getElementById('profileSidebarContent');
-                
-                const noDataMessage = '<p>No user data available</p>';
-                if (profileInfo) profileInfo.innerHTML = noDataMessage;
-                if (profileSidebarContent) profileSidebarContent.innerHTML = noDataMessage;
-                return;
-            }
-
-            const { user } = panelData.response;
-            const expiresDate = new Date(user.expiresAt);
-            const isNeverExpires = expiresDate.getFullYear() >= 2099;
-            const trafficLimitText = user.trafficLimit === "0" ? t('unlimited') : user.trafficLimit;
-
-            const avatarLetter = user.username ? user.username.charAt(0).toUpperCase() : 'U';
-            const expiryText = isNeverExpires ? t('never_expires') : formatDate(expiresDate);
-
-            const profileHtml = `
-                <div class="user-info">
-                    <div class="user-info-header">
-                        <div class="user-avatar">${avatarLetter}</div>
-                        <div class="user-basic-info">
-                            <h3>${escapeHtml(user.username)}</h3>
-                            <div class="user-status-badge">
-                                <span class="badge badge-${user.userStatus.toLowerCase()}">${t(user.userStatus)}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <span class="info-label">${t('expires_at')}</span>
-                            <span class="info-value">${expiryText}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">${t('traffic_used')}</span>
-                            <span class="info-value">${user.trafficUsed}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">${t('traffic_limit')}</span>
-                            <span class="info-value">${trafficLimitText}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            const profileInfo = document.getElementById('profileInfo');
-            const profileSidebarContent = document.getElementById('profileSidebarContent');
-            
-            if (profileInfo) profileInfo.innerHTML = profileHtml;
-            if (profileSidebarContent) profileSidebarContent.innerHTML = profileHtml;
-        }
-
-        function renderServersList() {
-            // Используем обработанные ссылки или исходные
-            const links = panelData.response.processedLinks || panelData.response.links || [];
-            
-            if (!links.length) {
-                document.getElementById('serversList').innerHTML = '<p>No servers available</p>';
-                return;
-            }
-
-            console.log(`Rendering ${links.length} servers...`);
-
-            const protocolMap = {
-                vless: 'Vless/Reality+selfsteal',
-                vmess: 'Vmess',
-                trojan: '',
-            };
-
-            const html = links.map((link, index) => {
-                const name = escapeHtml(extractLinkName(link));
-                const protoKey = link.protocol || (
-                    typeof link === 'string' ? (link.match(/^([a-z0-9]+):\/\//i)?.[1].toLowerCase()) : 'unknown'
-                );
-                const protocolDisplay = protocolMap[protoKey] ?? (
-                    protoKey.charAt(0).toUpperCase() + protoKey.slice(1)
-                );
-
-                return `
-                    <div class="server-item" data-server-index="${index}">
-                        <div class="server-info">
-                            <div class="server-name" data-name="${name}">
-                                ${name}
-                            </div>
-                            ${protocolDisplay ? `<div class="server-protocol">[${protocolDisplay}]</div>` : ''}
-                        </div>
-                        <div class="server-status">⏳</div>
-                        <div class="server-actions">
-                            <button class="btn btn-sm btn-secondary" onclick="copyToClipboard('${escapeHtml(link)}')">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                                </svg>
-                            </button>
-                            <button class="btn btn-sm btn-secondary" onclick="showQrModal('${escapeHtml(link)}', '${name}')">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            document.getElementById('serversList').innerHTML = html;
-            console.log('Servers rendered successfully');
-        }
-
-        // Connect button handler
-        function handleConnect() {
-            const url = panelData?.response?.subscriptionUrl;
-            if (!url) return;
-
-            const app = appsConfig?.[currentPlatform]?.find(a => a.id === selectedApp?.id) || 
-                      appsConfig?.[currentPlatform]?.find(a => a.isFeatured) || 
-                      appsConfig?.[currentPlatform]?.[0];
-            if (!app) {
-                window.location.href = url;
-                return;
-            }
-
-            const subscriptionLink = getSubscriptionLinkForApp(app);
-            window.location.href = subscriptionLink;
-        }
-
-        // Copy subscription link function
-        function copySubscriptionLink() {
-            const currentUrl = window.location.href;
-            copyToClipboard(currentUrl);
-        }
-
-        function getSubscriptionLinkForApp(app) {
-            const { response } = panelData || {};
-            const redirect_link = 'https://sub.example.com/redirect-page/?redirect_to=';  // Указать ссылку на страницу редиректа 
-            if (!response) return '#';
-            
-            if (app.id.toLowerCase() === 'happ' && response.happ?.cryptoLink) {
-                return redirect_link + response.happ.cryptoLink;
-            }
-            
-            if (!app.urlScheme || !response.subscriptionUrl) return '#';
-            
-            let url = response.subscriptionUrl;
+            if (!app.urlScheme || !data.subscriptionUrl) return '';
+            let subscriptionPart = data.subscriptionUrl;
             if (app.isNeedBase64Encoding) {
-                try { 
-                    url = btoa(url); 
-                } catch (e) { 
-                    return '#'; 
+                try {
+                    subscriptionPart = btoa(subscriptionPart);
+                } catch (error) {
+                    console.error('Base64 encoding failed:', error);
+                    return '';
                 }
             }
-            
-            return redirect_link + app.urlScheme + url;
+            const targetUrl = app.urlScheme + subscriptionPart;
+            if (isInTelegram) {
+                const prefix = app.redirectLink && app.redirectLink.trim() ? app.redirectLink : REDIRECT_BASE;
+                return prefix + encodeURIComponent(targetUrl);
+            }
+            return targetUrl;
         }
 
-        // VPN Status Updates - Xray Momitor
-        const USERNAME = "xray";   // Юзернейм от htpasswd
-        const PASSWORD = "PASS";   // Пасс от htpasswd
-
-        async function updateVpnStatus() {
-            console.log('Starting VPN status update...');
+        function openLink(url) {
             try {
-                const basicAuth = 'Basic ' + btoa(`${USERNAME}:${PASSWORD}`);
-                console.log('Using basic auth:', basicAuth);
+                if (window.Telegram?.WebApp) {
+                    window.Telegram.WebApp.openLink(url);
+                } else {
+                    window.open(url, '_blank');
+                }
+            } catch (error) {
+                console.error('Failed to open URL:', error);
+                window.open(url, '_blank');
+            }
+        }
 
-                const res = await fetch('/metrics', {
-                    headers: {
-                        'Authorization': basicAuth,
-                    }
+        function openSubscriptionUrl(url) {
+            if (!url || url === '#') {
+                console.warn('Invalid subscription URL:', url);
+                return;
+            }
+            try {
+                if (window.Telegram?.WebApp?.initData) {
+                    window.Telegram.WebApp.openLink(url);
+                } else {
+                    window.open(url, '_blank');
+                }
+            } catch (error) {
+                console.error('Failed to open subscription URL:', error);
+                if (window.prompt) {
+                    prompt('Copy this link:', url);
+                }
+            }
+        }
+
+        function openPlatformModal() {
+            const modalBody = document.getElementById('platformModalBody');
+            modalBody.innerHTML = `<div class="platform-modal-list">
+                ${validPlatforms.map(p => `
+                    <div class="platform-modal-item" data-platform="${p}">
+                        ${getAppIcon({ id: p }, p)}
+                        <span>${t(p)}</span>
+                    </div>
+                `).join('')}
+            </div>`;
+            modalBody.querySelectorAll('.platform-modal-item').forEach(item => {
+                item.addEventListener('click', e => {
+                    const platform = e.currentTarget.dataset.platform;
+                    switchPlatform(platform);
+                    closeModal('platformModal');
                 });
+            });
+            openModal('platformModal');
+        }
+        function switchPlatform(platform) {
+            if (!platform || platform === currentPlatform) return;
+            currentPlatform = platform;
+            localStorage.setItem('platform', platform);
+            document.querySelectorAll('.platform-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.platform === platform);
+            });
+            const appsGrid = document.getElementById('appsGrid');
+            appsGrid.innerHTML = renderAppsForPlatform();
+            const button = document.getElementById('platform-selector-btn');
+            if (button) {
+                button.innerHTML = `${getAppIcon({ id: platform }, platform)} <span>${t(platform)}</span>`;
+            }
+            updateTexts();
+            attachAppCardListeners(appsGrid);
+            attachSpoilerListeners(appsGrid);
+        }
 
-                console.log('Metrics response status:', res.status);
-                
-                if (!res.ok) {
-                    throw new Error(`Metrics fetch failed: ${res.status} ${res.statusText}`);
+        function throttle(func, limit) {
+            let inThrottle;
+            return function(...args) {
+                if (!inThrottle) {
+                    func.apply(this, args);
+                    inThrottle = true;
+                    setTimeout(() => (inThrottle = false), limit);
                 }
+            };
+        }
 
-                const text = await res.text();
-                console.log('Metrics response length:', text.length);
-                console.log('First 500 chars of metrics:', text.substring(0, 500));
+        const throttledSwitchPlatform = throttle(switchPlatform, 200);
 
-                const regex = /xray_proxy_status\{[^}]*name="([^"]+)"[^}]*\}\s+(\d+)/g;
-                let matches = 0;
-                let match;
-                
-                while ((match = regex.exec(text)) !== null) {
-                    matches++;
-                    const metricName = match[1];
-                    const status = Number(match[2]);
-                    
-                    console.log(`Found metric: ${metricName} = ${status}`);
-                    
-                    const cleanMetricName = metricName.replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, '').toLowerCase();
-                    console.log(`Cleaned metric name: ${cleanMetricName}`);
+        function attachEventListeners() {
+            document.querySelectorAll('.platform-tab').forEach(tab => {
+                tab.addEventListener('click', e => {
+                    const platform = e.currentTarget.dataset.platform;
+                    if (platform) throttledSwitchPlatform(platform);
+                });
+            });
+            attachAppCardListeners(document);
+            attachSpoilerListeners(document);
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', e => copyToClipboard(e.currentTarget.dataset.copyText));
+            });
+            document.querySelectorAll('.qr-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    const { qrText, qrTitle } = e.currentTarget.dataset;
+                    showQrModal(qrText, qrTitle);
+                });
+            });
+            window.addEventListener('resize', checkTabsOverflow);
+            checkTabsOverflow();
+        }
 
-                    // Find matching server elements
-                    document.querySelectorAll('.server-name').forEach(el => {
-                        const elName = el.getAttribute('data-name') || '';
-                        const cleanElName = elName.replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, '').toLowerCase();
-                        
-                        console.log(`Comparing "${cleanMetricName}" with "${cleanElName}"`);
-                        
-                        if (cleanMetricName.includes(cleanElName) || cleanElName.includes(cleanMetricName)) {
-                            console.log(`Match found! Updating status for: ${elName}`);
-                            const serverItem = el.closest('.server-item');
-                            const statusEl = serverItem?.querySelector('.server-status');
-                            if (statusEl) {
-                                statusEl.textContent = status === 1 ? '🟢' : '🔴';
-                                statusEl.classList.remove('green', 'red');
-                                statusEl.classList.add(status === 1 ? 'green' : 'red');
-                                console.log(`Status updated: ${status === 1 ? 'green' : 'red'}`);
-                            }
-                        }
-                    });
-                }
-                
-                console.log(`Total matches found: ${matches}`);
-                
-                // Update active servers count based on status
-                setTimeout(() => {
-                    const greenServers = document.querySelectorAll('.server-status.green').length;
-                    if (greenServers > 0) {
-                        document.getElementById('activeServers').textContent = greenServers;
-                        const activeServersMobile = document.getElementById('activeServersMobile');
-                        if (activeServersMobile) activeServersMobile.textContent = greenServers;
-                        console.log(`Updated active servers count: ${greenServers}`);
-                    }
-                }, 100);
-                
-            } catch (err) {
-                console.error('VPN status update error:', err);
-                console.error('Error details:', err.message);
+        function attachAppCardListeners(root) {
+            root.querySelectorAll?.('.app-card').forEach(card => {
+                card.addEventListener('click', e => {
+                    const appId = e.currentTarget.dataset.appId;
+                    const app = appsConfig.platforms[currentPlatform]?.find(a => a.id === appId);
+                    if (app) showAppSetupModal(app);
+                });
+            });
+        }
+
+        function attachSpoilerListeners(root) {
+            root.querySelectorAll?.('.spoiler-header').forEach(header => {
+                header.addEventListener('click', e => {
+                    const content = e.currentTarget.nextElementSibling;
+                    content.classList.toggle('open');
+                });
+            });
+        }
+
+        function checkTabsOverflow() {
+            const tabs = document.querySelector('.platform-tabs');
+            const button = document.getElementById('platform-selector-btn');
+            if (!tabs || !button) return;
+            if (window.matchMedia('(max-width: 768px)').matches) {
+                tabs.style.display = 'none';
+                button.style.display = 'inline-flex';
+                return;
+            }
+            const isOverflowing = tabs.scrollWidth > tabs.parentElement.clientWidth;
+            if (isOverflowing) {
+                tabs.style.display = 'none';
+                button.style.display = 'inline-flex';
+            } else {
+                tabs.style.display = 'flex';
+                button.style.display = 'none';
             }
         }
-
-        // Utility functions
-        function extractLinkName(link) {
-            console.log('Extracting name from link:', link);
-            let name = 'Server Link'; // default
-            
-            try { 
-                const url = new URL(link);
-                if (url.hash && url.hash.length > 1) {
-                    name = decodeURIComponent(url.hash.substring(1));
-                    console.log('Extracted from URL hash:', name);
-                    return name;
-                }
-            } catch (e) {
-                console.log('Failed to parse as URL:', e.message);
-            }
-            
-            // Fallback: look for # in string
-            const hashIndex = link.indexOf('#');
-            if (hashIndex !== -1 && hashIndex < link.length - 1) {
-                try { 
-                    name = decodeURIComponent(link.substring(hashIndex + 1));
-                    console.log('Extracted from string hash:', name);
-                    return name;
-                } catch (e) {
-                    console.log('Failed to decode hash part:', e.message);
-                    // Return raw hash part if decoding fails
-                    name = link.substring(hashIndex + 1);
-                    console.log('Using raw hash part:', name);
-                    return name;
-                }
-            }
-            
-            console.log('Using default name:', name);
-            return name;
-        }
-
-        function formatDate(d) { 
-            return new Date(d).toLocaleDateString(
-                currentLanguage === 'ru' ? 'ru-RU' : 
-                currentLanguage === 'fa' ? 'fa-IR' : 'en-GB'
-            ); 
-        }
-
-        function escapeHtml(s) { 
-            const d = document.createElement('div'); 
-            d.textContent = s; 
-            return d.innerHTML; 
-        }
-
-        // Modal functions
-        function openModal(id) { 
-            console.log(`Opening modal: ${id}`);
-            if (id === 'serverListModal') {
-                renderServersInModal();
-            }
-            document.getElementById(id)?.classList.add('active'); 
-        }
-
-        function closeModal(id) { 
-            document.getElementById(id)?.classList.remove('active'); 
+        function showAppSetupModal(app) {
+            if (!app) return;
+            const titleEl = document.getElementById('appModalTitle');
+            titleEl.innerHTML = `<div class="app-icon">${getAppIcon(app, currentPlatform)}</div><span>${escapeHtml(app.name)}</span>`;
+            const modalBody = document.getElementById('appModalBody');
+            modalBody.innerHTML = renderAppSteps(app);
+            updateTexts();
+            openModal('appModal');
         }
 
         function showQrModal(data, title) {
@@ -2707,17 +1315,37 @@ body::before {
                 qr.addData(data);
                 qr.make();
                 qrContainer.innerHTML = qr.createImgTag(5, 10);
-            } catch (e) {
-                console.error('QR generation failed:', e);
+            } catch (error) {
+                console.error('QR generation failed:', error);
                 qrContainer.textContent = 'Error generating QR code.';
             }
             openModal('qrModal');
         }
 
-        // Copy to clipboard
+        function showSubscriptionModal() {
+            const url = panelData?.response?.subscriptionUrl;
+            if (!url) return;
+            const qrContainer = document.getElementById('subscriptionQrCode');
+            qrContainer.innerHTML = '';
+            try {
+                const qr = qrcode(0, 'M');
+                qr.addData(url);
+                qr.make();
+                qrContainer.innerHTML = qr.createImgTag(5, 10);
+            } catch (error) {
+                console.error('QR generation failed:', error);
+                qrContainer.textContent = 'Error generating QR code.';
+            }
+            openModal('subscriptionModal');
+        }
+
+        function copySubscriptionUrl() {
+            copyToClipboard(panelData?.response?.subscriptionUrl);
+        }
+
         function copyToClipboard(text) {
             if (!text) {
-                console.error("Attempted to copy empty text.");
+                console.error('Attempted to copy empty text.');
                 return;
             }
             navigator.clipboard.writeText(text)
@@ -2730,32 +1358,76 @@ body::before {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.classList.add('show');
-            toastTimeout = setTimeout(() => { 
-                toast.classList.remove('show'); 
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
             }, 3000);
         }
 
-        // Event listeners
-        document.addEventListener('click', e => { 
+        function openModal(id) {
+            document.getElementById(id)?.classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id)?.classList.remove('active');
+        }
+
+        function extractLinkName(link) {
+            try {
+                const url = new URL(link);
+                if (url.hash) {
+                    return decodeURIComponent(url.hash.substring(1));
+                }
+            } catch (_) {}
+            const idx = link.indexOf('#');
+            if (idx !== -1) {
+                try {
+                    return decodeURIComponent(link.substring(idx + 1));
+                } catch (_) {}
+                return link.substring(idx + 1);
+            }
+            return 'Server Link';
+        }
+
+        function formatDate(date) {
+            if (!date) return '';
+            try {
+                const locale = currentLanguage === 'ru' ? 'ru-RU' : currentLanguage === 'fa' ? 'fa-IR' : 'en-GB';
+                return new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+            } catch (error) {
+                console.error('Error formatting date:', error);
+                return date.toISOString().split('T')[0];
+            }
+        }
+
+        function escapeHtml(text) {
+            if (text === undefined || text === null) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function escapeAttribute(text) {
+            if (typeof text !== 'string') return '';
+            return text.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        document.addEventListener('click', e => {
             if (e.target.classList.contains('modal')) {
-                e.target.classList.remove('active'); 
+                e.target.classList.remove('active');
             }
         });
 
-        document.addEventListener('keydown', e => { 
+        document.addEventListener('keydown', e => {
             if (e.key === 'Escape') {
-                document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active')); 
+                document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
             }
         });
 
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { 
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
             if (localStorage.getItem('theme') === 'auto') {
-                applyTheme('auto'); 
+                applyTheme('auto');
             }
         });
-
-        // Start VPN status updates - CHECK EVERY 15 SECONDS
-        setInterval(updateVpnStatus, 15000);
     </script>
 </body>
 </html>
